@@ -5,21 +5,8 @@ import "github.com/argus-labs/starter-game-template/types"
 // This is where we are declaring various game constants.
 
 type IWorldConstants struct {
-	SeedWord               string
-	PlayerCount            int
-	PlayerDensityThreshold int
-	RadiusCurrent          int
-	RadiusMax              int
-	RadiusGrowth           int
-	SpacePerlinThresholds  []int
-	PerlinThreshold1       int
-	PerlinThreshold2       int
-	PlayerSpawnMin1        int
-	PlayerSpawnMax1        int
-	PlayerSpawnMin2        int
-	PlayerSpawnMax2        int
-	PlayerSpawnMin3        int
-	PlayerSpawnMax3        int
+	SeedWord    string
+	PlayerCount int
 }
 
 type IFooConstants struct {
