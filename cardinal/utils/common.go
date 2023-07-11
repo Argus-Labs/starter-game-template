@@ -1,11 +1,9 @@
 package utils
 
-import (
-	"log"
-)
+import "github.com/rs/zerolog/log"
 
 func Must(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err)
 	}
 }

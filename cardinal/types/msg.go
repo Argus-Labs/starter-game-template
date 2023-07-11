@@ -1,6 +1,8 @@
 package types
 
-import ecs "github.com/argus-labs/world-engine/cardinal/ecs"
+import (
+	ecs "github.com/argus-labs/world-engine/cardinal/ecs"
+)
 
 type IArchetype struct {
 	Label      string

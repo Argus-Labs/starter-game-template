@@ -1,14 +1,15 @@
 package utils
 
 import (
-	"github.com/argus-labs/world-engine/cardinal/ecs"
-	"log"
 	"time"
+
+	"github.com/rs/zerolog/log"
+
+	"github.com/argus-labs/world-engine/cardinal/ecs"
 )
 
-// TODO: this should probably be upstreamed to the ecs lib
 func GameLoop(world *ecs.World) {
-	log.Print("Starting game loop...")
+	log.Info().Msg("Game loop started")
 	for range time.Tick(time.Second) {
 		if err := world.Tick(); err != nil {
 			panic(err)
