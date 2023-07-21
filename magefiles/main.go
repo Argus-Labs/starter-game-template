@@ -75,6 +75,7 @@ func Dev() error {
 		os.Exit(1)
 	}
 	fmt.Println("Dev webdis container created successfully and exposed on port 7379!")
+	fmt.Println("\nhttps://editor.world.dev\n")
 
 	// We are going to run cardinal in dev mode without docker
 	// and use Ngrok to expose the Miniredis to the internet
