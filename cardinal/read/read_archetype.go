@@ -1,47 +1,39 @@
-package msg
+package read
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
+	"github.com/argus-labs/starter-game-template/game"
 	"reflect"
 
-	"github.com/argus-labs/starter-game-template/game"
-	"github.com/argus-labs/starter-game-template/types"
-	"github.com/argus-labs/starter-game-template/utils"
 	"github.com/argus-labs/world-engine/cardinal/ecs"
 	"github.com/argus-labs/world-engine/cardinal/ecs/filter"
 	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
 )
 
-type QueryArchetypeMsg struct {
+type ArchetypeMsg struct {
 	ArchetypeLabel string `json:"archetype_label"`
 }
 
-func (h *QueryHandler) Archetype(w http.ResponseWriter, r *http.Request) {
-	var msg QueryArchetypeMsg
-	err := utils.DecodeMsg[QueryArchetypeMsg](r, &msg)
-	if err != nil {
-		utils.WriteError(w, "unable to decode query archetype msg", err)
-		return
-	}
+var Archetype = ecs.NewReadType[ArchetypeMsg]("archetype", queryArchetype)
 
-	entities, err := queryArchetype(h.World, msg)
-	if err != nil {
-		utils.WriteError(w, "failed to list archetype", err)
-	} else {
-		utils.WriteResult(w, entities)
-	}
-}
-
-func queryArchetype(world *ecs.World, m QueryArchetypeMsg) ([]interface{}, error) {
+func queryArchetype(world *ecs.World, m []byte) ([]byte, error) {
 	var entities []interface{}
 	var errs []error
 
-	var archetype types.IArchetype
-	var archetypeLabelIsFound bool = false
+	// Unmarshal msg json into struct
+	msg := new(ArchetypeMsg)
+	err := json.Unmarshal(m, msg)
+	if err != nil {
+		return nil, errors.New("failed to unmarshal archetype msg")
+	}
+
+	// Check if archetype label exist
+	var archetype game.IArchetype
+	var archetypeLabelIsFound = false
 	for _, a := range game.Archetypes {
-		if a.Label == m.ArchetypeLabel {
+		if a.Label == msg.ArchetypeLabel {
 			archetype = a
 			archetypeLabelIsFound = true
 			break
@@ -51,6 +43,7 @@ func queryArchetype(world *ecs.World, m QueryArchetypeMsg) ([]interface{}, error
 		return nil, errors.New("invalid archetype label")
 	}
 
+	// Query for the archetype
 	query := ecs.NewQuery(filter.Exact(archetype.Components...))
 	query.Each(world, func(id storage.EntityID) {
 		entity := make(map[string]interface{})
@@ -73,10 +66,16 @@ func queryArchetype(world *ecs.World, m QueryArchetypeMsg) ([]interface{}, error
 
 		entities = append(entities, entity)
 	})
-
+	// Handle the case where there is errors
 	if len(errs) > 0 {
 		return nil, errors.Join(errs...)
 	}
 
-	return entities, nil
+	// marshal entities to json string
+	res, err := json.Marshal(entities)
+	if err != nil {
+		return nil, errors.New("failed to marshal archetype entities")
+	}
+
+	return res, nil
 }

@@ -2,17 +2,17 @@ package system
 
 import (
 	comp "github.com/argus-labs/starter-game-template/component"
-	msg "github.com/argus-labs/starter-game-template/msg/tx"
+	msg "github.com/argus-labs/starter-game-template/tx"
 	"github.com/argus-labs/world-engine/cardinal/ecs"
 	"github.com/argus-labs/world-engine/cardinal/ecs/filter"
 	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
 )
 
-// AttackSystem is a system that inflict damage  to players's HP based on `TxAttackPlayer` transactions.
+// AttackSystem is a system that inflict damage  to players's HP based on `AttackPlayer` transactions.
 // This provides a simple example of how to create a system that modifies the component of an entity.
 func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
-	// Get all the transactions that are of type TxCreatePlayer from the tx queue
-	attackTxs := msg.TxAttackPlayer.In(tq)
+	// Get all the transactions that are of type CreatePlayer from the tx queue
+	attackTxs := msg.AttackPlayer.In(tq)
 
 	// Create an index of player tags to its health component
 	playerTagToID := map[string]storage.EntityID{}

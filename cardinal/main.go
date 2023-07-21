@@ -2,22 +2,25 @@ package main
 
 import (
 	"github.com/argus-labs/starter-game-template/component"
-	"github.com/argus-labs/starter-game-template/msg"
-	tx "github.com/argus-labs/starter-game-template/msg/tx"
+	read "github.com/argus-labs/starter-game-template/read"
 	"github.com/argus-labs/starter-game-template/system"
+	"github.com/argus-labs/starter-game-template/tx"
 	"github.com/argus-labs/starter-game-template/utils"
+	"github.com/argus-labs/world-engine/cardinal/server"
 	"github.com/rs/zerolog"
 )
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
+	cfg := utils.GetConfig()
+
 	// NOTE: Uses a Redis container
 	// Best to use this for testing with Retool
-	world := utils.NewDevWorld()
+	world := cfg.World
 
 	// NOTE: If you want to use an in-memory Redis, use this instead.
-	// This is the easiest way to run Cardinal locally, but doen't work with Retool.
+	// This is the easiest way to run Cardinal locally, but does not work with Retool.
 	// world := utils.NewInmemWorld()
 
 	// Register components
@@ -32,9 +35,11 @@ func main() {
 	// NOTE: You must register your transactions here,
 	// otherwise it will show an error when you try to use them in a system.
 	utils.Must(world.RegisterTransactions(
-		tx.TxCreatePlayer,
-		tx.TxAttackPlayer,
+		tx.CreatePlayer,
+		tx.AttackPlayer,
 	))
+
+	utils.Must(world.RegisterReads(read.Archetype))
 
 	// Each system executes deterministically in the order they are added.
 	// This is a neat feature that can be straegically used for systems that depends on the order of execution.
@@ -50,14 +55,9 @@ func main() {
 	// Start game loop as a goroutine
 	go utils.GameLoop(world)
 
-	// Register message handlers
-	h := msg.NewMsgHandler(world)
-	utils.RegisterRpc(utils.GetPort(), func() utils.CardinalHandlers {
-		return utils.CardinalHandlers{
-			{"query_archetype", h.Query.Archetype},
-			{"query_constant", h.Query.Constant},
-			{"tx_create_player", h.Tx.CreatePlayer},
-			{"tx_attack_player", h.Tx.AttackPlayer},
-		}
-	}())
+	h, err := server.NewHandler(world, server.DisableSignatureVerification())
+	if err != nil {
+		panic(err)
+	}
+	h.Serve("localhost", cfg.CardinalPort)
 }

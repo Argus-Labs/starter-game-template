@@ -58,6 +58,7 @@ func Dev() error {
 		return err
 	}
 	os.Setenv("CARDINAL_PORT", "4200")
+	os.Setenv("REDIS_ADDR", "localhost:6379")
 
 	// Run redis in a docker container because Miniredis doesn't work with Retool
 	// NOTE: this is because it doesn't implement CLIENT

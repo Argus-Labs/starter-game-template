@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -11,7 +12,7 @@ import (
 func GameLoop(world *ecs.World) {
 	log.Info().Msg("Game loop started")
 	for range time.Tick(time.Second) {
-		if err := world.Tick(); err != nil {
+		if err := world.Tick(context.Background()); err != nil {
 			panic(err)
 		}
 	}
