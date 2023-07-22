@@ -7,35 +7,11 @@ transaction relayer.
 
 ## Mage Check
 
-A mage target exists that will check for some common preqrequisites. Run the check with:
+A mage target exists that will check for some common pre-requisites. Run the check with:
 
 ```bash
 mage check
 ```
-
-## Github Access
-
-The game code (under the `cardinal` directory) runs on top of Cardinal, which is a library in the
-(currently) private [World Engine](https://github.com/Argus-Labs/world-engine) repo.
-
-You likely have access to this repo, but the `go` binary sometimes has trouble accessing private repos on your behalf.
-
-### GOPATH
-
-[Configure Go to access private modules](https://www.digitalocean.com/community/tutorials/how-to-use-a-private-go-module-in-your-own-project#configuring-go-to-access-private-modules)
-
-TL;DR: Add 'GOPRIVATE="github.com/argus-labs/world-engine"' to your environment variables.
-
-### Github Credentials
-
-In addition, configure git to use your private credentials via HTTPS or SSH:
-
-[Providing Private Module Credentials for HTTPS](https://www.digitalocean.com/community/tutorials/how-to-use-a-private-go-module-in-your-own-project#providing-private-module-credentials-for-https)
-OR
-[Providing Private Module Credentials for SSH](https://www.digitalocean.com/community/tutorials/how-to-use-a-private-go-module-in-your-own-project#providing-private-module-credentials-for-ssh)
-
-TODO: It would be helpful if this section included the error message that a user could expect to see when their git
-credentials are incorrect.
 
 ## Docker Compose
 
@@ -93,16 +69,14 @@ The Account tab on the left will give you access to a valid account ID.
 
 The API Explorer tab on the left will allow you to make requests to Cardinal.
 
-# Copy the Starter Game Template
+# Cardinal Editor
 
-You can make a full copy of this template with:
+The Cardinal Editor is a web-based companion app that makes game development of Cardinal easier. It allows you to inspect the state of Cardinal in real-time without any additional code.
+
+To work with the Cardinal Editor, you must first start the Cardinal server in dev mode:
 
 ```bash
-mage copy <target-directory> <module-path>
+mage dev
 ```
 
-The <target-directory> is where you want your code to live on your local machine and the <module-path> parameter is the
-repo location of your new game.
-
-See the [go mod init](https://golang.org/ref/mod#go-mod-init) documentation for more details about the module path
-parameter.
+Then, open the [Cardinal Editor](https://editor.world.dev) in a web browser.
