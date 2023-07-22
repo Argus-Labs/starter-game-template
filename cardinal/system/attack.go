@@ -1,8 +1,8 @@
 package system
 
 import (
-	comp "github.com/argus-labs/starter-game-template/component"
-	msg "github.com/argus-labs/starter-game-template/tx"
+	comp "github.com/argus-labs/starter-game-template/cardinal/component"
+	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"github.com/argus-labs/world-engine/cardinal/ecs"
 	"github.com/argus-labs/world-engine/cardinal/ecs/filter"
 	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
@@ -12,7 +12,7 @@ import (
 // This provides a simple example of how to create a system that modifies the component of an entity.
 func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 	// Get all the transactions that are of type CreatePlayer from the tx queue
-	attackTxs := msg.AttackPlayer.In(tq)
+	attackTxs := tx.AttackPlayer.In(tq)
 
 	// Create an index of player tags to its health component
 	playerTagToID := map[string]storage.EntityID{}

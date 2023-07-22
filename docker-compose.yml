@@ -40,6 +40,7 @@ services:
     environment:
       - CARDINAL_PORT=3333
       - REDIS_ADDR=redis:6379
+      - DF_DEPLOY_MODE=development # TODO: Switch to prod
 
   nakama:
     build: ./nakama
@@ -70,6 +71,7 @@ services:
       - "7350:7350"
       - "7351:7351"
     restart: unless-stopped
+
 
 volumes:
   data:

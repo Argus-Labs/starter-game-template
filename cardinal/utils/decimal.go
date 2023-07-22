@@ -14,7 +14,6 @@ func IntToDec(i int) *decimal.Big {
 	return decimal.New(int64(i), 0)
 }
 
-// TODO: this is pretty illegal lol
 func DecToInt(dec *decimal.Big) int {
 	bigInt := new(big.Int)
 	dec.Int(bigInt)

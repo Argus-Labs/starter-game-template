@@ -16,7 +16,7 @@ func NewProdWorld(addr string, password string) *ecs.World {
 		Addr:     addr,
 		Password: password, // make sure to set this in prod
 		DB:       0,        // use default DB
-	}, "darkforest-world")
+	}, "world")
 	worldStorage := storage.NewWorldStorage(&rs)
 	world, err := ecs.NewWorld(worldStorage)
 	if err != nil {

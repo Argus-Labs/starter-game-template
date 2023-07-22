@@ -1,8 +1,8 @@
 package system
 
 import (
-	comp "github.com/argus-labs/starter-game-template/component"
-	msg "github.com/argus-labs/starter-game-template/tx"
+	comp "github.com/argus-labs/starter-game-template/cardinal/component"
+	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"github.com/argus-labs/world-engine/cardinal/ecs"
 )
 
@@ -10,7 +10,7 @@ import (
 // This provides a simple example of how to create a system that creates a new entity.
 func PlayerSpawnerSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 	// Get all the transactions that are of type CreatePlayer from the tx queue
-	createTxs := msg.CreatePlayer.In(tq)
+	createTxs := tx.CreatePlayer.In(tq)
 
 	// Iterate through all transactions and process them individually.
 	// DEV: it's important here that you don't break out of the loop or return an error here

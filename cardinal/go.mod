@@ -1,4 +1,4 @@
-module github.com/argus-labs/starter-game-template
+module github.com/argus-labs/starter-game-template/cardinal
 
 go 1.20
 
@@ -36,7 +36,7 @@ require (
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/alicebob/miniredis/v2 v2.30.2 // indirect
 	github.com/argus-labs/world-engine/chain v0.0.0-20230707202412-c8445f1731f0 // indirect
-	github.com/argus-labs/world-engine/sign v0.1.0-alpha // indirect
+	github.com/argus-labs/world-engine/sign v0.1.2-alpha // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect

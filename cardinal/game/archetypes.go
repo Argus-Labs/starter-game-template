@@ -1,7 +1,7 @@
 package game
 
 import (
-	"github.com/argus-labs/starter-game-template/component"
+	"github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/world-engine/cardinal/ecs"
 )
 

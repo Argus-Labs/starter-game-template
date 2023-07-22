@@ -48,6 +48,36 @@ func Start() error {
 	return nil
 }
 
+// StartDetach starts Nakama and cardinal with detach and wait-timeout 60s (suit for CI workflow)
+func StartDetach() error {
+	mg.Deps(exitMagefilesDir)
+	if err := prepareDir("cardinal"); err != nil {
+		return err
+	}
+	if err := prepareDir("nakama"); err != nil {
+		return err
+	}
+	if err := sh.RunV("docker", "compose", "up", "--detach", "--wait", "--wait-timeout", "60"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Build only Nakama and cardinal
+func Build() error {
+	mg.Deps(exitMagefilesDir)
+	if err := prepareDir("cardinal"); err != nil {
+		return err
+	}
+	if err := prepareDir("nakama"); err != nil {
+		return err
+	}
+	if err := sh.RunV("docker", "compose", "build"); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Start cardinal in dev mode
 func Dev() error {
 	mg.Deps(exitMagefilesDir)
@@ -57,7 +87,10 @@ func Dev() error {
 	if err := os.Chdir("cardinal"); err != nil {
 		return err
 	}
-	os.Setenv("CARDINAL_PORT", "4200")
+
+	// Set environment variables for dev mode
+	os.Setenv("DF_DEPLOY_MODE", "development")
+	os.Setenv("CARDINAL_PORT", "3333")
 	os.Setenv("REDIS_ADDR", "localhost:6379")
 
 	// Run redis in a docker container because Miniredis doesn't work with Retool
@@ -76,7 +109,6 @@ func Dev() error {
 		os.Exit(1)
 	}
 	fmt.Println("Dev webdis container created successfully and exposed on port 7379!")
-	fmt.Println("\nhttps://editor.world.dev\n")
 
 	// We are going to run cardinal in dev mode without docker
 	// and use Ngrok to expose the Miniredis to the internet

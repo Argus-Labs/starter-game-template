@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/argus-labs/starter-game-template/game"
+	"github.com/argus-labs/starter-game-template/cardinal/game"
 	"reflect"
 
 	"github.com/argus-labs/world-engine/cardinal/ecs"
