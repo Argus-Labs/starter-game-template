@@ -5,7 +5,7 @@ import (
 )
 
 type AttackPlayerMsg struct {
-	TargetPlayerTag string `json:"target_player_tag"`
+	TargetNickname string `json:"target"`
 }
 
 var AttackPlayer = ecs.NewTransactionType[AttackPlayerMsg]("attack-player")

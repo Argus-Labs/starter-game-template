@@ -4,7 +4,7 @@ services:
     command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all
     environment:
       - POSTGRES_DB=nakama
-      - POSTGRES_PASSWORD=localdb #TODO: don't use this for prod
+      - POSTGRES_PASSWORD=localdb
     expose:
       - "8080"
       - "5432"
@@ -19,7 +19,6 @@ services:
       retries: 5
     volumes:
       - data:/var/lib/postgresql/data
-
   redis: # This doesn't have the correct persistence settings. Don't use on for prod.
     image: redis:latest
     command: redis-server # TODO: This runs without password. Don't use for prod.
@@ -28,7 +27,6 @@ services:
     ports:
       - "6379:6379"
     restart: always
-
   cardinal:
     build: ./cardinal
     depends_on:
@@ -40,21 +38,23 @@ services:
     environment:
       - CARDINAL_PORT=3333
       - REDIS_ADDR=redis:6379
-      - DF_DEPLOY_MODE=development # TODO: Switch to prod
-
+      - REDIS_MODE=normal
   nakama:
     build: ./nakama
     depends_on:
       - postgres
       - cardinal
     environment:
-      - CARDINAL_ADDR=http://cardinal:3333
+      - CARDINAL_ADDR=${CARDINAL_ADDR:-http://cardinal:3333}
+      - CARDINAL_NAMESPACE=0
     entrypoint:
       - "/bin/sh"
       - "-ecx"
       - >
         /nakama/nakama migrate up --database.address postgres:localdb@postgres:5432/nakama &&
-        exec /nakama/nakama --config /nakama/data/local.yml --database.address postgres:localdb@postgres:5432/nakama
+        exec /nakama/nakama --config /nakama/data/local.yml --database.address postgres:localdb@postgres:5432/nakama        
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     expose:
       - "7349"
       - "7350"
@@ -71,7 +71,12 @@ services:
       - "7350:7350"
       - "7351:7351"
     restart: unless-stopped
-
-
+  testsuite:
+    build: ./testsuite
+    depends_on:
+      - cardinal
+      - nakama
+    environment:
+      - NAKAMA_ADDRESS=http://nakama:7350
 volumes:
   data:

@@ -1,7 +1,6 @@
 package read
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/argus-labs/starter-game-template/cardinal/game"
@@ -12,40 +11,38 @@ import (
 	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
 )
 
-type ArchetypeMsg struct {
-	ArchetypeLabel string `json:"archetype_label"`
+type ArchetypeRequest struct {
+	Label string `json:"label"`
 }
 
-var Archetype = ecs.NewReadType[ArchetypeMsg]("archetype", queryArchetype)
+type ArchetypeResponse struct {
+	Label string      `json:"label"`
+	Value interface{} `json:"value"`
+}
 
-func queryArchetype(world *ecs.World, m []byte) ([]byte, error) {
+var Archetype = ecs.NewReadType[ArchetypeRequest, ArchetypeResponse]("archetype", queryArchetype)
+
+func queryArchetype(world *ecs.World, req ArchetypeRequest) (ArchetypeResponse, error) {
 	var entities []interface{}
 	var errs []error
-
-	// Unmarshal msg json into struct
-	msg := new(ArchetypeMsg)
-	err := json.Unmarshal(m, msg)
-	if err != nil {
-		return nil, errors.New("failed to unmarshal archetype msg")
-	}
 
 	// Check if archetype label exist
 	var archetype game.IArchetype
 	var archetypeLabelIsFound = false
 	for _, a := range game.Archetypes {
-		if a.Label == msg.ArchetypeLabel {
+		if a.Label == req.Label {
 			archetype = a
 			archetypeLabelIsFound = true
 			break
 		}
 	}
 	if !archetypeLabelIsFound {
-		return nil, errors.New("invalid archetype label")
+		return ArchetypeResponse{}, errors.New("invalid archetype label")
 	}
 
 	// Query for the archetype
 	query := ecs.NewQuery(filter.Exact(archetype.Components...))
-	query.Each(world, func(id storage.EntityID) {
+	query.Each(world, func(id storage.EntityID) bool {
 		entity := make(map[string]interface{})
 		entity["id"] = id
 
@@ -58,24 +55,20 @@ func queryArchetype(world *ecs.World, m []byte) ([]byte, error) {
 			value, err := componentGetResult[0].Interface(), componentGetResult[1].Interface()
 			if err != nil {
 				errs = append(errs, fmt.Errorf("failed to get component %s", component.Name()))
-				return
+				return true
 			}
 
 			entity[component.Name()] = value
 		}
 
 		entities = append(entities, entity)
+		return true
 	})
-	// Handle the case where there is errors
+
+	// Handle errors
 	if len(errs) > 0 {
-		return nil, errors.Join(errs...)
+		return ArchetypeResponse{}, errors.Join(errs...)
 	}
 
-	// marshal entities to json string
-	res, err := json.Marshal(entities)
-	if err != nil {
-		return nil, errors.New("failed to marshal archetype entities")
-	}
-
-	return res, nil
+	return ArchetypeResponse{Label: req.Label, Value: entities}, nil
 }

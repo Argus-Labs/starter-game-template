@@ -5,7 +5,7 @@ import (
 )
 
 type CreatePlayerMsg struct {
-	Tag string `json:"tag"`
+	Nickname string `json:"nickname"`
 }
 
 var CreatePlayer = ecs.NewTransactionType[CreatePlayerMsg]("create-player")

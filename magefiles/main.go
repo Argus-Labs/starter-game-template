@@ -4,16 +4,30 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
+	"os"
 )
 
 // Check verifies that various prerequisites are installed or configured on your machine
 func Check() error {
 	return checkPrereq(true)
+}
+
+// Test runs the test suite
+func Test() error {
+	mg.Deps(exitMagefilesDir)
+	if err := sh.RunV("docker", "compose", "down", "--volumes"); err != nil {
+		return err
+	}
+
+	if err := prepareDirs("testsuite", "cardinal", "nakama"); err != nil {
+		return err
+	}
+	if err := sh.RunV("docker", "compose", "up", "--build", "--abort-on-container-exit", "--exit-code-from", "testsuite", "--attach", "testsuite"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Stop stops Nakama and cardinal
@@ -33,16 +47,28 @@ func Restart() error {
 	return nil
 }
 
-// Start starts Nakama and cardinal
-func Start() error {
+// Nakama starts just the Nakama server. The game server needs to be started some other way.
+func Nakama() error {
 	mg.Deps(exitMagefilesDir)
-	if err := prepareDir("cardinal"); err != nil {
-		return err
-	}
 	if err := prepareDir("nakama"); err != nil {
 		return err
 	}
-	if err := sh.RunV("docker", "compose", "up", "--build"); err != nil {
+	env := map[string]string{
+		"CARDINAL_ADDR": "http://host.docker.internal:3333",
+	}
+	if err := sh.RunWithV(env, "docker", "compose", "up", "--build", "nakama"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Start starts Nakama and cardinal
+func Start() error {
+	mg.Deps(exitMagefilesDir)
+	if err := prepareDirs("cardinal", "nakama"); err != nil {
+		return err
+	}
+	if err := sh.RunV("docker", "compose", "up", "--build", "cardinal", "nakama"); err != nil {
 		return err
 	}
 	return nil
@@ -78,7 +104,7 @@ func Build() error {
 	return nil
 }
 
-// Start cardinal in dev mode
+// Start cardinal in dev mode without Nakama
 func Dev() error {
 	mg.Deps(exitMagefilesDir)
 	if err := prepareDir("cardinal"); err != nil {
@@ -89,7 +115,7 @@ func Dev() error {
 	}
 
 	// Set environment variables for dev mode
-	os.Setenv("DF_DEPLOY_MODE", "development")
+	os.Setenv("REDIS_MODE", "normal")
 	os.Setenv("CARDINAL_PORT", "3333")
 	os.Setenv("REDIS_ADDR", "localhost:6379")
 
@@ -113,15 +139,16 @@ func Dev() error {
 	// We are going to run cardinal in dev mode without docker
 	// and use Ngrok to expose the Miniredis to the internet
 	// so that we can use tools like Retool to inspect the game state
-	runCardinal := sh.RunCmd("go", "run", "main.go")
+	runCardinal := sh.RunCmd("go", "run", ".")
 
 	// Run Cardinal as a goroutine
 	errCh1 := make(chan error, 1)
 	go func() {
 		errCh1 <- runCardinal()
 	}()
-	err1 := <-errCh1
 
+	// Wait for a signal to stop
+	err1 := <-errCh1
 	if err1 != nil {
 		err = sh.RunV("docker", "rm", "-f", "cardinal-dev-redis")
 		if err != nil {
@@ -135,42 +162,8 @@ func Dev() error {
 			fmt.Println("Please delete it manually with `docker rm -f cardinal-dev-webdis`")
 		}
 
-		return err1
+		return nil
 	}
 
-	return nil
-}
-
-func prepareDir(dir string) error {
-	if err := os.Chdir(dir); err != nil {
-		return err
-	}
-	if err := sh.Rm("./vendor"); err != nil {
-		return err
-	}
-	if err := sh.Run("go", "mod", "tidy"); err != nil {
-		return err
-	}
-	if err := sh.Run("go", "mod", "vendor"); err != nil {
-		return err
-	}
-	if err := os.Chdir(".."); err != nil {
-		return err
-	}
-	return nil
-}
-
-func exitMagefilesDir() error {
-	curr, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	curr = filepath.Base(curr)
-	if curr == "magefiles" {
-		if err := os.Chdir(".."); err != nil {
-			return err
-		}
-
-	}
 	return nil
 }

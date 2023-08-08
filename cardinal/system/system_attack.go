@@ -8,7 +8,7 @@ import (
 	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
 )
 
-// AttackSystem is a system that inflict damage  to players's HP based on `AttackPlayer` transactions.
+// AttackSystem is a system that inflict damage to player's HP based on `AttackPlayer` transactions.
 // This provides a simple example of how to create a system that modifies the component of an entity.
 func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 	// Get all the transactions that are of type CreatePlayer from the tx queue
@@ -16,21 +16,22 @@ func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 
 	// Create an index of player tags to its health component
 	playerTagToID := map[string]storage.EntityID{}
-	ecs.NewQuery(filter.Exact(comp.Player, comp.Health)).Each(world, func(id storage.EntityID) {
+	ecs.NewQuery(filter.Exact(comp.Player, comp.Health)).Each(world, func(id storage.EntityID) bool {
 		player, err := comp.Player.Get(world, id)
 		if err != nil {
-			return
+			return true
 		}
 
-		playerTagToID[player.Tag] = id
+		playerTagToID[player.Nickname] = id
+		return true
 	})
 
 	// Iterate through all transactions and process them individually.
 	// DEV: it's important here that you don't break out of the loop or return an error here
 	// or otherwise the rest of the transaction will not be processed & get dropped.
 	// In the future, you will be able to add error receipts to transaction receipts.
-	for _, tx := range attackTxs {
-		targetPlayerID, ok := playerTagToID[tx.TargetPlayerTag]
+	for _, attack := range attackTxs {
+		targetPlayerID, ok := playerTagToID[attack.TargetNickname]
 		// If the target player doesn't exist, skip this transaction
 		if !ok {
 			continue

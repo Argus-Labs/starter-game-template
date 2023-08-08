@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/read"
 	"github.com/argus-labs/starter-game-template/cardinal/system"
@@ -8,20 +9,18 @@ import (
 	"github.com/argus-labs/starter-game-template/cardinal/utils"
 	"github.com/argus-labs/world-engine/cardinal/server"
 	"github.com/rs/zerolog"
+	"time"
 )
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
-	cfg := utils.GetConfig()
+	cfg := GetConfig()
 
-	// NOTE: Uses a Redis container
-	// Best to use this for testing with Retool
+	// TODO: In production, you should set DEPLOY_MODE=production
+	// and set REDIS_ADDR and REDIS_PASSWORD to use a real Redis instance.
+	// Otherwise, by default cardinal will run using an in-memory "miniredis"
 	world := cfg.World
-
-	// NOTE: If you want to use an in-memory Redis, use this instead.
-	// This is the easiest way to run Cardinal locally, but does not work with Retool.
-	// world := utils.NewInmemWorld()
 
 	// Register components
 	// NOTE: You must register your components here,
@@ -39,6 +38,9 @@ func main() {
 		tx.AttackPlayer,
 	))
 
+	// Register read endpoints
+	// NOTE: You must register your read endpoints here,
+	// otherwise it will not be accessible.
 	utils.Must(world.RegisterReads(
 		read.Archetype,
 		read.Constant,
@@ -54,9 +56,7 @@ func main() {
 
 	// Load game state
 	utils.Must(world.LoadGameState())
-
-	// Start game loop as a goroutine
-	go utils.GameLoop(world)
+	world.StartGameLoop(context.Background(), time.Second)
 
 	// TODO: When launching to production, you should enable signature verification.
 	h, err := server.NewHandler(world, server.DisableSignatureVerification())

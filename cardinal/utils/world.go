@@ -4,12 +4,19 @@ import (
 	"github.com/argus-labs/world-engine/cardinal/ecs"
 	"github.com/argus-labs/world-engine/cardinal/ecs/inmem"
 	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
+	"github.com/rs/zerolog/log"
 )
 
-// NewProdWorld should be the only way to run the game in production
-func NewProdWorld(addr string, password string) *ecs.World {
-	if addr == "" || password == "" {
-		panic("redis addr or password is empty string")
+// NewWorld is the recommended way to run the game
+func NewWorld(addr string, password string) *ecs.World {
+	log.Log().Msg("Running in normal mode, using external Redis")
+	if addr == "" {
+		log.Log().Msg("Redis address is not set, using fallback - localhost:6379")
+		addr = "localhost:6379"
+	}
+	if password == "" {
+		log.Log().Msg("Redis password is not set, make sure to set up redis with password in prod")
+		password = ""
 	}
 
 	rs := storage.NewRedisStorage(storage.Options{
@@ -26,33 +33,11 @@ func NewProdWorld(addr string, password string) *ecs.World {
 	return world
 }
 
-// NewDevWorld is the recommended way of running the game for development
-// where you are going to need use Retool to inspect the state.
-// NOTE(1): You will need to have Redis running in `EnvRedisAddr` for this to work.
-// NOTE(2): In prod, your Redis should have a password loaded from env var so don't use this.
-func NewDevWorld(addr string) *ecs.World {
-	if addr == "" {
-		panic("redis addr is empty string")
-	}
-
-	rs := storage.NewRedisStorage(storage.Options{
-		Addr:     addr,
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	}, "example")
-	worldStorage := storage.NewWorldStorage(&rs)
-	world, err := ecs.NewWorld(worldStorage)
-	if err != nil {
-		panic(err)
-	}
-
-	return world
-}
-
-// NewInmemWorld is the most convenient way to run the game locally
+// NewEmbeddedWorld is the most convenient way to run the game
 // because it doesn't require spinning up Redis in a container
 // it runs a Redis server as a part of the Go process
-// However, it will not work with Retool.
-func NewInmemWorld() *ecs.World {
+// However, it will not work with Cardinal Editor.
+func NewEmbeddedWorld() *ecs.World {
+	log.Log().Msg("Running in embedded mode, using embedded miniredis")
 	return inmem.NewECSWorld()
 }
