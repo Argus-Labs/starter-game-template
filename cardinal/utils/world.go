@@ -34,9 +34,9 @@ func NewWorld(addr string, password string) *ecs.World {
 }
 
 // NewEmbeddedWorld is the most convenient way to run the game
-// because it doesn't require spinning up Redis in a container
-// it runs a Redis server as a part of the Go process
-// However, it will not work with Cardinal Editor.
+// because it doesn't require spinning up Redis in a container.
+// It runs a Redis server as a part of the Go process.
+// NOTE: worlds with embedded redis are incompatible with Cardinal Editor.
 func NewEmbeddedWorld() *ecs.World {
 	log.Log().Msg("Running in embedded mode, using embedded miniredis")
 	return inmem.NewECSWorld()
