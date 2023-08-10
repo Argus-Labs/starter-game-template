@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"time"
+
 	"github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/read"
 	"github.com/argus-labs/starter-game-template/cardinal/system"
@@ -9,7 +11,6 @@ import (
 	"github.com/argus-labs/world-engine/cardinal/server"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 func main() {

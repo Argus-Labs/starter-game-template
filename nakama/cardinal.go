@@ -17,10 +17,11 @@ import (
 )
 
 var (
-	listTxEndpointsEndpoint   = "list/tx-endpoints"
-	listReadEndpoints         = "list/read-endpoints"
-	createPersonaEndpoint     = "tx-create-persona"
-	readPersonaSignerEndpoint = "read-persona-signer"
+	listTxEndpointsEndpoint     = "list/tx-endpoints"
+	listReadEndpoints           = "list/read-endpoints"
+	createPersonaEndpoint       = "tx-create-persona"
+	readPersonaSignerEndpoint   = "read-persona-signer"
+	transactionReceiptsEndpoint = "transaction-receipts"
 
 	readPersonaSignerStatusUnknown   = "unknown"
 	readPersonaSignerStatusAvailable = "available"
@@ -78,6 +79,17 @@ func cardinalListAllEndpoints() ([]string, error) {
 	return endpoints, nil
 }
 
+func doRequest(req *http.Request) (*http.Response, error) {
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("request to %q failed: %w", req.URL, err)
+	} else if resp.StatusCode != 200 {
+		buf, err := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("got response of %d: %v, %w", resp.StatusCode, string(buf), err)
+	}
+	return resp, nil
+}
+
 func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, personaTag string) (tick uint64, err error) {
 	signerAddress := getSignerAddress()
 	createPersonaTx := struct {
@@ -108,12 +120,9 @@ func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, persona
 		return 0, fmt.Errorf("unable to make request to %q: %w", createPersonaEndpoint, err)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := doRequest(req)
 	if err != nil {
-		return 0, fmt.Errorf("request to %q failed: %w", createPersonaEndpoint, err)
-	} else if resp.StatusCode != 200 {
-		buf, err := io.ReadAll(resp.Body)
-		return 0, fmt.Errorf("response is not 200: %v, %v", string(buf), err)
+		return 0, err
 	}
 	createPersonaResponse := struct {
 		Status string
@@ -145,14 +154,11 @@ func cardinalQueryPersonaSigner(ctx context.Context, personaTag string, tick uin
 	if err != nil {
 		return "", err
 	}
-	httpResp, err := http.DefaultClient.Do(httpReq)
+	httpResp, err := doRequest(httpReq)
 	if err != nil {
 		return "", err
 	}
-	if c := httpResp.StatusCode; c != 200 {
-		buf, _ = io.ReadAll(httpResp.Body)
-		return "", fmt.Errorf("failed to query %q, got status code %d: %v", readPersonaSignerEndpoint, c, string(buf))
-	}
+
 	var resp struct {
 		Status        string
 		SignerAddress string

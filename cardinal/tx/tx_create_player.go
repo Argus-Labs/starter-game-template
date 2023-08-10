@@ -8,4 +8,8 @@ type CreatePlayerMsg struct {
 	Nickname string `json:"nickname"`
 }
 
-var CreatePlayer = ecs.NewTransactionType[CreatePlayerMsg]("create-player")
+type CreatePlayerMsgReply struct {
+	Success bool `json:"success"`
+}
+
+var CreatePlayer = ecs.NewTransactionType[CreatePlayerMsg, CreatePlayerMsgReply]("create-player")

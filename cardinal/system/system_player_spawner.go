@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+
 	comp "github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"github.com/argus-labs/world-engine/cardinal/ecs"
@@ -20,21 +21,25 @@ func PlayerSpawnerSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 	for _, create := range createTxs {
 		id, err := world.Create(comp.Player, comp.Health)
 		if err != nil {
-			fmt.Println("Error creating player")
+			tx.CreatePlayer.AddError(world, create.ID,
+				fmt.Errorf("error creating player: %w", err))
 			continue
 		}
 
-		err = comp.Player.Set(world, id, comp.PlayerComponent{Nickname: create.Nickname})
+		err = comp.Player.Set(world, id, comp.PlayerComponent{Nickname: create.Value.Nickname})
 		if err != nil {
-			fmt.Println("Error setting player nickname")
+			tx.CreatePlayer.AddError(world, create.ID,
+				fmt.Errorf("error setting player nickname: %w", err))
 			continue
 		}
 
 		err = comp.Health.Set(world, id, comp.HealthComponent{HP: 100})
 		if err != nil {
-			fmt.Println("Error setting player health")
+			tx.CreatePlayer.AddError(world, create.ID,
+				fmt.Errorf("error setting player health: %w", err))
 			continue
 		}
+		tx.CreatePlayer.SetResult(world, create.ID, tx.CreatePlayerMsgReply{true})
 	}
 
 	return nil

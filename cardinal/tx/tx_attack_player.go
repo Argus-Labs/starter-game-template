@@ -8,4 +8,6 @@ type AttackPlayerMsg struct {
 	TargetNickname string `json:"target"`
 }
 
-var AttackPlayer = ecs.NewTransactionType[AttackPlayerMsg]("attack-player")
+type AttackPlayerMsgReply struct{}
+
+var AttackPlayer = ecs.NewTransactionType[AttackPlayerMsg, AttackPlayerMsgReply]("attack-player")
