@@ -14,10 +14,8 @@ on:
 
   
 env:
-  GCP_REGISTRY_ARTIFACT_PATH: us-docker.pkg.dev/world-engine-test/dark-forest
-  GCP_PROJECT_ID: world-engine-test
-  CARDINAL_REGISTRY_PATH: dark-forest/cardinal
-  NAKAMA_REGISTRY_PATH: dark-forest/nakama
+  CARDINAL_REGISTRY_PATH: starter-game-template/cardinal
+  NAKAMA_REGISTRY_PATH: starter-game-templa/nakama
   
 jobs:
   mage-build:
