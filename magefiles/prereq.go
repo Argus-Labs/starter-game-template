@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/magefile/mage/sh"
 )
