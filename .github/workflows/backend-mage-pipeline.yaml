@@ -75,7 +75,7 @@ jobs:
   images-release:
     runs-on: ubuntu-latest
     needs: mage-build
-    efaults:
+    defaults:
       run:
         shell: bash
     strategy:
