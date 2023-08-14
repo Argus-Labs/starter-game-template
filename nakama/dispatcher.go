@@ -100,13 +100,15 @@ func (r *receiptsDispatcher) streamBatchOfReceipts(log runtime.Logger, startTick
 	return reply.EndTick, nil
 }
 
+type txReceiptRequest struct {
+	StartTick uint64 `json:"start_tick"`
+}
+
 func (r *receiptsDispatcher) getBatchOfReceiptsFromCardinal(startTick uint64) (reply *TransactionReceiptsReply, err error) {
-	txReceiptRequest := struct {
-		StartTick uint64 `json:"start_tick"`
-	}{
+	request := txReceiptRequest{
 		StartTick: startTick,
 	}
-	buf, err := json.Marshal(txReceiptRequest)
+	buf, err := json.Marshal(request)
 	if err != nil {
 		return nil, err
 	}
