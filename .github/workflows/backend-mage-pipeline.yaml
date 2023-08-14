@@ -12,7 +12,6 @@ on:
     tags:
       - 'v*.*.*'
 
-  
 env:
   CARDINAL_REGISTRY_PATH: starter-game-template/cardinal
   NAKAMA_REGISTRY_PATH: starter-game-templa/nakama
@@ -73,3 +72,18 @@ jobs:
         with:
           version: latest
           args: test
+  images-release:
+    runs-on: ubuntu-latest
+    needs: mage-build
+    efaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        go-version: [1.20.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - run: docker images
