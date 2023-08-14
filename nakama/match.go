@@ -1,3 +1,8 @@
+// match.go defines a struct that implements Nakama's runtime.Match interface.
+// Matches are used to broadcast Cardinal data to connected clients. A client is 'connected' if they
+// are in a Nakama match.
+// See https://heroiclabs.com/docs/nakama/client-libraries/index.html for information on using Nakama client
+// libraries to join matches and consume broadcasted messages.
 package main
 
 import (
@@ -9,6 +14,8 @@ import (
 )
 
 type ReceiptMatch struct{}
+
+var _ runtime.Match = &ReceiptMatch{}
 
 type ReceiptMatchState struct {
 	chanID         string

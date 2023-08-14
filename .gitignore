@@ -114,5 +114,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Node modules
-/jsclient/node_modules
+# Node
+/.jsclient/node_modules
+yarn-error.log
