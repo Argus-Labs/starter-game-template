@@ -101,7 +101,10 @@ jobs:
           docker tag ${{ env.IMAGE_NAME_NAKAMA }}:latest $IMAGE_ID_NAKAMA:$VERSION
           docker tag ${{ env.IMAGE_NAME_CARDINAL }}:latest $IMAGE_ID_CARDINAL:$VERSION
           docker tag ${{ env.IMAGE_NAME_TESTSUITE }}:latest $IMAGE_ID_TESTSUITE:$VERSION
-          docker push $IMAGE_ID:$VERSION
+
+          docker push $IMAGE_ID_NAKAMA:$VERSION
+          docker push $IMAGE_ID_CARDINAL:$VERSION
+          docker push $IMAGE_ID_TESTSUITE:$VERSION
   artifact-cleanup:
     runs-on: ubuntu-latest
     needs: [
