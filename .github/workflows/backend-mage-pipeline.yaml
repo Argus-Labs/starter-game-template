@@ -50,9 +50,9 @@ jobs:
           docker image ls -a | grep starter-game-template
       - name: Docker save local build images
         run: |
-          docker save IMAGE_NAME_NAKAMA:latest > /tmp/IMAGE_NAME_NAKAMA-latest.tar
-          docker save IMAGE_NAME_CARDINAL:latest > /tmp/IMAGE_NAME_CARDINAL-latest.tar
-          docker save IMAGE_NAME_TESTSUITE:latest > /tmp/IMAGE_NAME_TESTSUITE-latest.tar
+          docker save ${{ env.IMAGE_NAME_NAKAMA:latest }} > /tmp/${{ env.IMAGE_NAME_NAKAMA }}-latest.tar
+          docker save ${{ env.IMAGE_NAME_CARDINAL:latest }} > /tmp/${{ env.IMAGE_NAME_CARDINAL }}-latest.tar
+          docker save ${{ env.IMAGE_NAME_TESTSUITE:latest }} > /tmp/${{ env.IMAGE_NAME_TESTSUITE }}-latest.tar
       - name: Upload local build images to temporary artifact
         uses: actions/upload-artifact@v3
         with:
@@ -77,26 +77,30 @@ jobs:
           path: /tmp/
       - name: Load image and show build images
         run: |
-          docker load --input /tmp/IMAGE_NAME_NAKAMA-latest.tar
-          docker load --input /tmp/IMAGE_NAME_CARDINAL-latest.tar
-          docker load --input /tmp/IMAGE_NAME_TESTSUITE-latest.tar
+          docker load --input /tmp/${{ env.IMAGE_NAME_NAKAMA }}-latest.tar
+          docker load --input /tmp/${{ env.IMAGE_NAME_CARDINAL }}-latest.tar
+          docker load --input /tmp/${{ env.IMAGE_NAME_TESTSUITE }}-latest.tar
           docker image ls -a | grep starter-game-template
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
       - name: Push image
         run: |
-          IMAGE_ID_NAKAMA=ghcr.io/${{ github.repository_owner }}/IMAGE_NAME_NAKAMA
+          IMAGE_ID_NAKAMA=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME_NAKAMA }}
           IMAGE_ID_NAKAMA=$(echo $IMAGE_ID_NAKAMA | tr '[A-Z]' '[a-z]')
-          IMAGE_ID_CARDINAL=ghcr.io/${{ github.repository_owner }}/IMAGE_NAME_CARDINAL
+
+          IMAGE_ID_CARDINAL=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME_CARDINAL }}
           IMAGE_ID_CARDINAL=$(echo $IMAGE_ID_CARDINAL | tr '[A-Z]' '[a-z]')
-          IMAGE_ID_TESTSUITE=ghcr.io/${{ github.repository_owner }}/IMAGE_NAME_TESTSUITE
+
+          IMAGE_ID_TESTSUITE=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME_TESTSUITE }}
           IMAGE_ID_TESTSUITE=$(echo $IMAGE_ID_TESTSUITE | tr '[A-Z]' '[a-z]')
+
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           [ "$VERSION" == "main" ] && VERSION=latest
-          docker tag $IMAGE_NAME_NAKAMA:latest $IMAGE_ID_NAKAMA:$VERSION
-          docker tag $IMAGE_NAME_CARDINAL:latest $IMAGE_ID_CARDINAL:$VERSION
-          docker tag $IMAGE_NAME_TESTSUITE:latest $IMAGE_ID_TESTSUITE:$VERSION
+
+          docker tag ${{ env.IMAGE_NAME_NAKAMA }}:latest $IMAGE_ID_NAKAMA:$VERSION
+          docker tag ${{ env.IMAGE_NAME_CARDINAL }}:latest $IMAGE_ID_CARDINAL:$VERSION
+          docker tag ${{ env.IMAGE_NAME_TESTSUITE }}:latest $IMAGE_ID_TESTSUITE:$VERSION
           docker push $IMAGE_ID:$VERSION
   artifact-cleanup:
     runs-on: ubuntu-latest
