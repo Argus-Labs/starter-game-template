@@ -11,10 +11,8 @@ replace (
 )
 
 require (
-	github.com/argus-labs/world-engine/cardinal v0.1.20-alpha
-	github.com/ericlagergren/decimal v0.0.0-20221120152707-495c53812d05
+	github.com/argus-labs/world-engine/cardinal v0.1.22-alpha
 	github.com/rs/zerolog v1.29.1
-	golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
 
 require (
@@ -107,6 +105,7 @@ require (
 	github.com/yuin/gopher-lua v1.1.0 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect

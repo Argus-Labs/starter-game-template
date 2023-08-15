@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@heroiclabs/nakama-js": "^2.6.1",
+    "ws": "^8.13.0"
+  }
+}

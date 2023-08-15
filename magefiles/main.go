@@ -14,12 +14,19 @@ func Check() error {
 	return checkPrereq(true)
 }
 
-// Test runs the test suite
-func Test() error {
-	mg.Deps(exitMagefilesDir)
+// Clear deletes all the docker volumes
+func Clear() error {
 	if err := sh.RunV("docker", "compose", "down", "--volumes"); err != nil {
 		return err
 	}
+	return nil
+}
+
+
+// Test runs the test suite
+func Test() error {
+	mg.Deps(exitMagefilesDir)
+	mg.Deps(Clear)
 
 	if err := prepareDirs("testsuite", "cardinal", "nakama"); err != nil {
 		return err

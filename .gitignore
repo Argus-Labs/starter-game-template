@@ -19,6 +19,7 @@
 # Dependency directories (remove the comment below to include it)
 /cardinal/vendor
 /nakama/vendor
+/testsuite/vendor
 
 ### Linux ###
 *~
@@ -112,3 +113,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Node
+/.jsclient/node_modules
+yarn-error.log

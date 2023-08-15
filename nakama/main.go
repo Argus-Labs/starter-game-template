@@ -39,6 +39,8 @@ const (
 
 type personaTagStatus string
 
+type receiptChan chan *Receipt
+
 const (
 	personaTagStatusUnknown  personaTagStatus = "unknown"
 	personaTagStatusPending  personaTagStatus = "pending"
@@ -59,16 +61,26 @@ var (
 	globalNamespace string
 
 	globalPersonaTagAssignment = sync.Map{}
+
+	globalReceiptsDispatcher *receiptsDispatcher
 )
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
 
 	if err := initCardinalAddress(); err != nil {
-		return err
+		return fmt.Errorf("failed to init cardinal address: %w", err)
 	}
 
 	if err := initNamespace(); err != nil {
-		return err
+		return fmt.Errorf("failed to init namespace: %w", err)
+	}
+
+	if err := initReceiptStreaming(logger); err != nil {
+		return fmt.Errorf("failed to init receipt streaming: %w", err)
+	}
+
+	if err := initReceiptMatch(ctx, logger, db, nk, initializer); err != nil {
+		return fmt.Errorf("unable to init matches for receipt streaming")
 	}
 
 	if err := initPrivateKey(ctx, logger, nk); err != nil {
@@ -95,6 +107,30 @@ func initNamespace() error {
 	if globalNamespace == "" {
 		return fmt.Errorf("must specify a cardinal namespace via %s", EnvCardinalNamespace)
 	}
+	return nil
+}
+
+func initReceiptStreaming(log runtime.Logger) error {
+	globalReceiptsDispatcher = newReceiptsDispatcher()
+	go globalReceiptsDispatcher.pollReceipts(log)
+	go globalReceiptsDispatcher.dispatch(log)
+	return nil
+}
+
+func initReceiptMatch(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
+	err := initializer.RegisterMatch("lobby", func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule) (runtime.Match, error) {
+		return &ReceiptMatch{}, nil
+	})
+	if err != nil {
+		logger.Error("unable to register match: %v", err)
+		return err
+	}
+	result, err := nk.MatchCreate(ctx, "lobby", map[string]any{})
+	if err != nil {
+		logger.Error("unable to create match: %v", err)
+		return err
+	}
+	logger.Debug("match create result is %q", result)
 	return nil
 }
 
