@@ -50,9 +50,9 @@ jobs:
           docker image ls -a | grep starter-game-template
       - name: Docker save local build images
         run: |
-          docker save ${{ env.IMAGE_NAME_NAKAMA:latest }} > /tmp/${{ env.IMAGE_NAME_NAKAMA }}-latest.tar
-          docker save ${{ env.IMAGE_NAME_CARDINAL:latest }} > /tmp/${{ env.IMAGE_NAME_CARDINAL }}-latest.tar
-          docker save ${{ env.IMAGE_NAME_TESTSUITE:latest }} > /tmp/${{ env.IMAGE_NAME_TESTSUITE }}-latest.tar
+          docker save ${{ env.IMAGE_NAME_NAKAMA }}:latest > /tmp/${{ env.IMAGE_NAME_NAKAMA }}-latest.tar
+          docker save ${{ env.IMAGE_NAME_CARDINAL }}:latest > /tmp/${{ env.IMAGE_NAME_CARDINAL }}-latest.tar
+          docker save ${{ env.IMAGE_NAME_TESTSUITE }}:latest > /tmp/${{ env.IMAGE_NAME_TESTSUITE }}-latest.tar
       - name: Upload local build images to temporary artifact
         uses: actions/upload-artifact@v3
         with:
