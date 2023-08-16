@@ -13,9 +13,10 @@ on:
       - 'v*.*.*'
 
 env:
-  IMAGE_NAME_NAKAMA: starter-game-template-nakama
-  IMAGE_NAME_CARDINAL: starter-game-template-cardinal
-  IMAGE_NAME_TESTSUITE: starter-game-template-testsuite
+  IMAGE_NAME_NAKAMA: starter-game-template/nakama
+  IMAGE_NAME_CARDINAL: starter-game-template/cardinal
+  IMAGE_NAME_TESTSUITE: starter-game-template/testsuite
+  REGISTRY_URL: us-docker.pkg.dev
   
 jobs:
   mage-build-test:
@@ -81,22 +82,34 @@ jobs:
           docker load --input /tmp/${{ env.IMAGE_NAME_CARDINAL }}-latest.tar
           docker load --input /tmp/${{ env.IMAGE_NAME_TESTSUITE }}-latest.tar
           docker image ls -a | grep starter-game-template
-      - name: Log in to registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      - name: GCP auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: GCP - Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      - name: Docker - auth to artifact registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGISTRY_URL }}
       - name: Push image
         run: |
-          IMAGE_ID_NAKAMA=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME_NAKAMA }}
+          IMAGE_ID_NAKAMA=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME_NAKAMA }}
           IMAGE_ID_NAKAMA=$(echo $IMAGE_ID_NAKAMA | tr '[A-Z]' '[a-z]')
 
-          IMAGE_ID_CARDINAL=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME_CARDINAL }}
+          IMAGE_ID_CARDINAL=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME_CARDINAL }}
           IMAGE_ID_CARDINAL=$(echo $IMAGE_ID_CARDINAL | tr '[A-Z]' '[a-z]')
 
-          IMAGE_ID_TESTSUITE=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME_TESTSUITE }}
+          IMAGE_ID_TESTSUITE=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME_TESTSUITE }}
           IMAGE_ID_TESTSUITE=$(echo $IMAGE_ID_TESTSUITE | tr '[A-Z]' '[a-z]')
 
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           [ "$VERSION" == "main" ] && VERSION=latest
+          [ "$VERSION" == "merge" ] && VERSION=latest
 
           docker tag ${{ env.IMAGE_NAME_NAKAMA }}:latest $IMAGE_ID_NAKAMA:$VERSION
           docker tag ${{ env.IMAGE_NAME_CARDINAL }}:latest $IMAGE_ID_CARDINAL:$VERSION
