@@ -13,9 +13,6 @@ on:
       - 'v*.*.*'
 
 env:
-  IMAGE_NAME_NAKAMA: starter-game-template/nakama
-  IMAGE_NAME_CARDINAL: starter-game-template/cardinal
-  IMAGE_NAME_TESTSUITE: starter-game-template/testsuite
   REGISTRY_URL: us-docker.pkg.dev
   
 jobs:
@@ -51,9 +48,9 @@ jobs:
           docker image ls -a | grep starter-game-template
       - name: Docker save local build images
         run: |
-          docker save ${{ env.IMAGE_NAME_NAKAMA }}:latest > /tmp/${{ env.IMAGE_NAME_NAKAMA }}-latest.tar
-          docker save ${{ env.IMAGE_NAME_CARDINAL }}:latest > /tmp/${{ env.IMAGE_NAME_CARDINAL }}-latest.tar
-          docker save ${{ env.IMAGE_NAME_TESTSUITE }}:latest > /tmp/${{ env.IMAGE_NAME_TESTSUITE }}-latest.tar
+          docker save ${{ github.event.repository.name }}-nakama:latest > /tmp/${{ github.event.repository.name }}-nakama-latest.tar
+          docker save ${{ github.event.repository.name }}-cardinal:latest > /tmp/${{ github.event.repository.name }}-cardinal-latest.tar
+          docker save ${{ github.event.repository.name }}-testsuite:latest > /tmp/${{ github.event.repository.name }}-testsuite-latest.tar
       - name: Upload local build images to temporary artifact
         uses: actions/upload-artifact@v3
         with:
@@ -78,9 +75,9 @@ jobs:
           path: /tmp/
       - name: Load image and show build images
         run: |
-          docker load --input /tmp/${{ env.IMAGE_NAME_NAKAMA }}-latest.tar
-          docker load --input /tmp/${{ env.IMAGE_NAME_CARDINAL }}-latest.tar
-          docker load --input /tmp/${{ env.IMAGE_NAME_TESTSUITE }}-latest.tar
+          docker load --input /tmp/${{ github.event.repository.name }}-nakama-latest.tar
+          docker load --input /tmp/${{ github.event.repository.name }}-cardinal-latest.tar
+          docker load --input /tmp/${{ github.event.repository.name }}-testsuite-latest.tar
           docker image ls -a | grep starter-game-template
       - name: GCP auth
         id: auth
@@ -97,13 +94,13 @@ jobs:
           gcloud auth configure-docker ${{ env.REGISTRY_URL }}
       - name: Push image
         run: |
-          IMAGE_ID_NAKAMA=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME_NAKAMA }}
+          IMAGE_ID_NAKAMA=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/nakama
           IMAGE_ID_NAKAMA=$(echo $IMAGE_ID_NAKAMA | tr '[A-Z]' '[a-z]')
 
-          IMAGE_ID_CARDINAL=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME_CARDINAL }}
+          IMAGE_ID_CARDINAL=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/cardinal
           IMAGE_ID_CARDINAL=$(echo $IMAGE_ID_CARDINAL | tr '[A-Z]' '[a-z]')
 
-          IMAGE_ID_TESTSUITE=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME_TESTSUITE }}
+          IMAGE_ID_TESTSUITE=${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/testsuite
           IMAGE_ID_TESTSUITE=$(echo $IMAGE_ID_TESTSUITE | tr '[A-Z]' '[a-z]')
 
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
@@ -111,9 +108,9 @@ jobs:
           [ "$VERSION" == "main" ] && VERSION=latest
           [ "$VERSION" == "merge" ] && VERSION=latest
 
-          docker tag ${{ env.IMAGE_NAME_NAKAMA }}:latest $IMAGE_ID_NAKAMA:$VERSION
-          docker tag ${{ env.IMAGE_NAME_CARDINAL }}:latest $IMAGE_ID_CARDINAL:$VERSION
-          docker tag ${{ env.IMAGE_NAME_TESTSUITE }}:latest $IMAGE_ID_TESTSUITE:$VERSION
+          docker tag ${{ github.event.repository.name }}-nakama:latest $IMAGE_ID_NAKAMA:$VERSION
+          docker tag ${{ github.event.repository.name }}-cardinal:latest $IMAGE_ID_CARDINAL:$VERSION
+          docker tag ${{ github.event.repository.name }}-testsuite:latest $IMAGE_ID_TESTSUITE:$VERSION
 
           docker push $IMAGE_ID_NAKAMA:$VERSION
           docker push $IMAGE_ID_CARDINAL:$VERSION
