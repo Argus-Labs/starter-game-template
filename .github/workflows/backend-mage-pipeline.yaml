@@ -56,14 +56,14 @@ jobs:
           docker image ls -a | grep starter-game-template
       - name: Docker save local build images
         run: |
-          docker save ${{ github.event.repository.name }}-nakama:latest > /tmp/${{ github.event.repository.name }}-nakama-latest.tar
-          docker save ${{ github.event.repository.name }}-cardinal:latest > /tmp/${{ github.event.repository.name }}-cardinal-latest.tar
-          docker save ${{ github.event.repository.name }}-testsuite:latest > /tmp/${{ github.event.repository.name }}-testsuite-latest.tar
+          docker save ${{ github.event.repository.name }}-nakama:latest | gzip > /tmp/${{ github.event.repository.name }}-nakama-latest.tar.gz
+          docker save ${{ github.event.repository.name }}-cardinal:latest | gzip > /tmp/${{ github.event.repository.name }}-cardinal-latest.tar.gz
+          docker save ${{ github.event.repository.name }}-testsuite:latest | gzip > /tmp/${{ github.event.repository.name }}-testsuite-latest.tar.gz
       - name: Upload local build images to temporary artifact
         uses: actions/upload-artifact@v3
         with:
           name: buildimage
-          path: /tmp/starter-game-template-*.tar
+          path: /tmp/starter-game-template-*.tar.gz
   images-release:
     runs-on: ubuntu-latest
     needs: mage-build-test
@@ -87,9 +87,9 @@ jobs:
           path: /tmp/
       - name: Load image and show build images
         run: |
-          docker load --input /tmp/${{ github.event.repository.name }}-nakama-latest.tar
-          docker load --input /tmp/${{ github.event.repository.name }}-cardinal-latest.tar
-          docker load --input /tmp/${{ github.event.repository.name }}-testsuite-latest.tar
+          docker load --input /tmp/${{ github.event.repository.name }}-nakama-latest.tar.gz
+          docker load --input /tmp/${{ github.event.repository.name }}-cardinal-latest.tar.gz
+          docker load --input /tmp/${{ github.event.repository.name }}-testsuite-latest.tar.gz
           docker image ls -a | grep starter-game-template
       - name: GCP auth
         id: auth
