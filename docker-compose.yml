@@ -46,7 +46,7 @@ services:
       - cardinal
     environment:
       - CARDINAL_ADDR=${CARDINAL_ADDR:-http://cardinal:3333}
-      - CARDINAL_NAMESPACE=0
+      - CARDINAL_NAMESPACE=world
     entrypoint:
       - "/bin/sh"
       - "-ecx"

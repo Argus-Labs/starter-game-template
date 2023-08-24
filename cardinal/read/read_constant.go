@@ -2,8 +2,9 @@ package read
 
 import (
 	"errors"
+
 	"github.com/argus-labs/starter-game-template/cardinal/game"
-	"github.com/argus-labs/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs"
 )
 
 type ConstantRequest struct {

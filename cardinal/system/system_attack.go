@@ -5,9 +5,9 @@ import (
 
 	comp "github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
-	"github.com/argus-labs/world-engine/cardinal/ecs"
-	"github.com/argus-labs/world-engine/cardinal/ecs/filter"
-	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
+	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs/filter"
+	"pkg.world.dev/world-engine/cardinal/ecs/storage"
 )
 
 // AttackSystem is a system that inflict damage to player's HP based on `AttackPlayer` transactions.
@@ -37,7 +37,7 @@ func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 		targetPlayerID, ok := playerTagToID[target]
 		// If the target player doesn't exist, skip this transaction
 		if !ok {
-			tx.AttackPlayer.AddError(world, attack.ID,
+			tx.AttackPlayer.AddError(world, attack.TxHash,
 				fmt.Errorf("target %q does not exist", target))
 			continue
 		}
@@ -45,7 +45,7 @@ func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 		// Get the health component for the target player
 		health, err := comp.Health.Get(world, targetPlayerID)
 		if err != nil {
-			tx.AttackPlayer.AddError(world, attack.ID,
+			tx.AttackPlayer.AddError(world, attack.TxHash,
 				fmt.Errorf("can't get health for %q: %w", target, err))
 			continue
 		}
@@ -53,7 +53,7 @@ func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
 		// Inflict damage and update the component
 		health.HP -= 10
 		if err := comp.Health.Set(world, targetPlayerID, health); err != nil {
-			tx.AttackPlayer.AddError(world, attack.ID,
+			tx.AttackPlayer.AddError(world, attack.TxHash,
 				fmt.Errorf("failed to set health on %q: %w", target, err))
 			continue
 		}

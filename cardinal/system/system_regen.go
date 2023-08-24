@@ -2,9 +2,9 @@ package system
 
 import (
 	comp "github.com/argus-labs/starter-game-template/cardinal/component"
-	"github.com/argus-labs/world-engine/cardinal/ecs"
-	"github.com/argus-labs/world-engine/cardinal/ecs/filter"
-	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
+	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs/filter"
+	"pkg.world.dev/world-engine/cardinal/ecs/storage"
 )
 
 // RegenSystem is a system that replenishes the player's HP at every tick.

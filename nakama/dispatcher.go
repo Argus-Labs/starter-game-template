@@ -19,14 +19,9 @@ type TransactionReceiptsReply struct {
 }
 
 type Receipt struct {
-	ID     TxID           `json:"id"`
+	TxHash string         `json:"tx_hash"`
 	Result map[string]any `json:"result"`
 	Errors []string       `json:"errors"`
-}
-
-type TxID struct {
-	PersonaTag string
-	Index      uint64
 }
 
 // receiptsDispatcher continually polls Cardinal for transaction receipts and dispatches them to any subscribed

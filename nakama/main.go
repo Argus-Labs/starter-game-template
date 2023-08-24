@@ -12,9 +12,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/argus-labs/world-engine/sign"
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
+	"pkg.world.dev/world-engine/sign"
 )
 
 const (
@@ -189,6 +189,7 @@ type personaTagStorageObj struct {
 	PersonaTag string           `json:"persona_tag"`
 	Status     personaTagStatus `json:"status"`
 	Tick       uint64           `json:"tick"`
+	TxHash     string           `json:"tx_hash"`
 }
 
 // storageObjToPersonaTagStorageObj converts a generic Nakama StorageObject to a locally defined personaTagStorageObj.
@@ -304,19 +305,20 @@ func handleClaimPersona(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 	if ok := setPersonaTagAssignment(ptr.PersonaTag, userID); !ok {
 		ptr.Status = personaTagStatusRejected
 		if err := setPersonaTagStorageObj(ctx, nk, ptr); err != nil {
-			return logError(logger, "unable to set persona tag storage object: %w", err)
+			return logError(logger, "unable to set persona tag storage object: %v", err)
 		}
 		return logCode(logger, ALREADY_EXISTS, "persona tag %q is not available", ptr.PersonaTag)
 	}
 
-	tick, err := cardinalCreatePersona(ctx, nk, ptr.PersonaTag)
+	txHash, tick, err := cardinalCreatePersona(ctx, nk, ptr.PersonaTag)
 	if err != nil {
-		return logError(logger, "unable to make create persona request to cardinal: %w", err)
+		return logError(logger, "unable to make create persona request to cardinal: %v", err)
 	}
 
 	ptr.Tick = tick
+	ptr.TxHash = txHash
 	if err := setPersonaTagStorageObj(ctx, nk, ptr); err != nil {
-		return logError(logger, "unable to save persona tag storage object: %w", err)
+		return logError(logger, "unable to save persona tag storage object: %v", err)
 	}
 	return ptr.toJSON()
 }
@@ -438,7 +440,7 @@ func makeSignedPayload(ctx context.Context, nk runtime.NakamaModule, payload str
 	}
 
 	pk, nonce, err := getPrivateKeyAndANonce(ctx, nk)
-	sp, err := sign.NewSignedString(pk, personaTag, globalNamespace, nonce, payload)
+	sp, err := sign.NewSignedPayload(pk, personaTag, globalNamespace, nonce, payload)
 	if err != nil {
 		return nil, err
 	}

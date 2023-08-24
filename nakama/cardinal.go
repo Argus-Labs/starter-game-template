@@ -12,8 +12,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/argus-labs/world-engine/sign"
 	"github.com/heroiclabs/nakama-common/runtime"
+	"pkg.world.dev/world-engine/sign"
 )
 
 var (
@@ -32,6 +32,11 @@ var (
 	ErrorPersonaSignerAvailable = errors.New("persona signer is available")
 	ErrorPersonaSignerUnknown   = errors.New("persona signer is unknown.")
 )
+
+type txResponse struct {
+	TxHash string `json:"tx_hash"`
+	Tick   uint64 `json:"tick"`
+}
 
 func initCardinalAddress() error {
 	globalCardinalAddress = os.Getenv(EnvCardinalAddr)
@@ -90,7 +95,7 @@ func doRequest(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, personaTag string) (tick uint64, err error) {
+func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, personaTag string) (txHash string, tick uint64, err error) {
 	signerAddress := getSignerAddress()
 	createPersonaTx := struct {
 		PersonaTag    string
@@ -102,39 +107,42 @@ func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, persona
 
 	key, nonce, err := getPrivateKeyAndANonce(ctx, nk)
 	if err != nil {
-		return 0, fmt.Errorf("unable to get the private key or a nonce: %w", err)
+		return "", 0, fmt.Errorf("unable to get the private key or a nonce: %w", err)
 	}
 
-	signedPayload, err := sign.NewSignedPayload(key, personaTag, globalNamespace, nonce, createPersonaTx)
+	signedPayload, err := sign.NewSystemSignedPayload(key, globalNamespace, nonce, createPersonaTx)
 	if err != nil {
-		return 0, fmt.Errorf("unable to create signed payload: %w", err)
+		return "", 0, fmt.Errorf("unable to create signed payload: %w", err)
 	}
 
 	buf, err := signedPayload.Marshal()
 	if err != nil {
-		return 0, fmt.Errorf("unable to marshal signed payload: %w", err)
+		return "", 0, fmt.Errorf("unable to marshal signed payload: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", makeURL(createPersonaEndpoint), bytes.NewReader(buf))
 	if err != nil {
-		return 0, fmt.Errorf("unable to make request to %q: %w", createPersonaEndpoint, err)
+		return "", 0, fmt.Errorf("unable to make request to %q: %w", createPersonaEndpoint, err)
 	}
 
 	resp, err := doRequest(req)
 	if err != nil {
-		return 0, err
+		return "", 0, err
 	}
-	createPersonaResponse := struct {
-		Status string
-		Tick   uint64
-	}{}
+	if code := resp.StatusCode; code != 200 {
+		buf, err := io.ReadAll(resp.Body)
+		return "", 0, fmt.Errorf("create persona response is not 200. code %v, body: %v, err: %v", code, string(buf), err)
+
+	}
+	var createPersonaResponse txResponse
+
 	if err := json.NewDecoder(resp.Body).Decode(&createPersonaResponse); err != nil {
-		return 0, fmt.Errorf("unable to decode response: %w", err)
+		return "", 0, fmt.Errorf("unable to decode response: %w", err)
 	}
-	if s := createPersonaResponse.Status; s != "ok" {
-		return 0, fmt.Errorf("create persona failed with status %q", s)
+	if createPersonaResponse.TxHash == "" {
+		return "", 0, fmt.Errorf("tx response does not have a tx hash")
 	}
-	return createPersonaResponse.Tick, nil
+	return createPersonaResponse.TxHash, createPersonaResponse.Tick, nil
 }
 
 func cardinalQueryPersonaSigner(ctx context.Context, personaTag string, tick uint64) (signerAddress string, err error) {
