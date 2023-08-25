@@ -10,7 +10,7 @@ import (
 
 // PlayerSpawnerSystem is a system that spawns players based on `CreatePlayer` transactions.
 // This provides a simple example of how to create a system that creates a new entity.
-func PlayerSpawnerSystem(world *ecs.World, tq *ecs.TransactionQueue) error {
+func PlayerSpawnerSystem(world *ecs.World, tq *ecs.TransactionQueue, _ *ecs.Logger) error {
 	// Get all the transactions that are of type CreatePlayer from the tx queue
 	createTxs := tx.CreatePlayer.In(tq)
 

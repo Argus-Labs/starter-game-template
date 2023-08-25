@@ -9,7 +9,7 @@ import (
 
 // RegenSystem is a system that replenishes the player's HP at every tick.
 // This provides a simple example of how to create a system that doesn't rely on a transaction to update a component.
-func RegenSystem(world *ecs.World, _ *ecs.TransactionQueue) error {
+func RegenSystem(world *ecs.World, _ *ecs.TransactionQueue, _ *ecs.Logger) error {
 	ecs.NewQuery(filter.Exact(comp.Player, comp.Health)).Each(world, func(id storage.EntityID) bool {
 		// Get the health component for the player
 		health, err := comp.Health.Get(world, id)
