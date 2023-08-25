@@ -2,7 +2,7 @@ package game
 
 import (
 	"github.com/argus-labs/starter-game-template/cardinal/component"
-	"github.com/argus-labs/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs"
 )
 
 type IArchetype struct {

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/argus-labs/starter-game-template/cardinal/utils"
-	"github.com/argus-labs/world-engine/cardinal/ecs"
 	"os"
+
+	"github.com/argus-labs/starter-game-template/cardinal/utils"
+	"pkg.world.dev/world-engine/cardinal/ecs"
 )
 
 type Config struct {

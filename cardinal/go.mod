@@ -1,6 +1,6 @@
 module github.com/argus-labs/starter-game-template/cardinal
 
-go 1.20
+go 1.21
 
 replace (
 	github.com/cometbft/cometbft => github.com/rollkit/cometbft v0.0.0-20230614163111-d6a8d2c98cc0
@@ -10,10 +10,7 @@ replace (
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
 
-require (
-	github.com/argus-labs/world-engine/cardinal v0.1.22-alpha
-	github.com/rs/zerolog v1.29.1
-)
+require github.com/rs/zerolog v1.29.1
 
 require (
 	buf.build/gen/go/argus-labs/world-engine/grpc/go v1.3.0-20230808004839-11a21a99bf62.1 // indirect
@@ -29,9 +26,7 @@ require (
 	cosmossdk.io/x/tx v0.9.1 // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
-	github.com/alicebob/miniredis/v2 v2.30.2 // indirect
-	github.com/argus-labs/world-engine/chain v0.1.1-alpha // indirect
-	github.com/argus-labs/world-engine/sign v0.1.4-alpha // indirect
+	github.com/alicebob/miniredis/v2 v2.30.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
@@ -116,5 +111,8 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	pkg.world.dev/world-engine/cardinal v0.1.27-alpha
+	pkg.world.dev/world-engine/chain v0.1.11-alpha // indirect
+	pkg.world.dev/world-engine/sign v0.1.6-alpha // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )

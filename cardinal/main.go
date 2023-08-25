@@ -8,9 +8,9 @@ import (
 	"github.com/argus-labs/starter-game-template/cardinal/read"
 	"github.com/argus-labs/starter-game-template/cardinal/system"
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
-	"github.com/argus-labs/world-engine/cardinal/server"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"pkg.world.dev/world-engine/cardinal/server"
 )
 
 func main() {
@@ -73,9 +73,9 @@ func main() {
 	world.StartGameLoop(context.Background(), time.Second)
 
 	// TODO: When launching to production, you should enable signature verification.
-	h, err := server.NewHandler(world, server.DisableSignatureVerification())
+	h, err := server.NewHandler(world, server.WithPort(cfg.CardinalPort))
 	if err != nil {
 		panic(err)
 	}
-	h.Serve("", cfg.CardinalPort)
+	h.Serve()
 }

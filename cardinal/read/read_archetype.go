@@ -3,12 +3,12 @@ package read
 import (
 	"errors"
 	"fmt"
-	"github.com/argus-labs/starter-game-template/cardinal/game"
 	"reflect"
 
-	"github.com/argus-labs/world-engine/cardinal/ecs"
-	"github.com/argus-labs/world-engine/cardinal/ecs/filter"
-	"github.com/argus-labs/world-engine/cardinal/ecs/storage"
+	"github.com/argus-labs/starter-game-template/cardinal/game"
+	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs/filter"
+	"pkg.world.dev/world-engine/cardinal/ecs/storage"
 )
 
 type ArchetypeRequest struct {

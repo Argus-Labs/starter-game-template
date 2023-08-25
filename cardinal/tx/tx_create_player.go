@@ -1,7 +1,7 @@
 package tx
 
 import (
-	"github.com/argus-labs/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs"
 )
 
 type CreatePlayerMsg struct {
