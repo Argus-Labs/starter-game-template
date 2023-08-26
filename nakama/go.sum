@@ -28,5 +28,5 @@ google.golang.org/protobuf v1.28.1 h1:d0NfwRgPtno5B1Wa6L2DAG+KivqkdutMf1UhdNx175
 google.golang.org/protobuf v1.28.1/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
 gotest.tools/v3 v3.5.0 h1:Ljk6PdHdOhAb5aDMWXjDLMMhph+BpztA4v1QdqEW2eY=
 gotest.tools/v3 v3.5.0/go.mod h1:isy3WKz7GK6uNw/sbHzfKBLvlvXwUyV06n6brMxxopU=
-pkg.world.dev/world-engine/sign v0.1.6-alpha h1:ZGHmsvx4QPo6odFPx2rc8n2KIAT1GTP/8gIopNGWpwA=
-pkg.world.dev/world-engine/sign v0.1.6-alpha/go.mod h1:JcKXhdeYvCPRAgsCUSFEDcAJgf67VgMWWrA2Y2VZJSg=
+pkg.world.dev/world-engine/sign v0.1.7-alpha h1:7Oaoc0OUBP0fAPGna+/fw5fbrNw88sIVzr0SujY0wgQ=
+pkg.world.dev/world-engine/sign v0.1.7-alpha/go.mod h1:JcKXhdeYvCPRAgsCUSFEDcAJgf67VgMWWrA2Y2VZJSg=

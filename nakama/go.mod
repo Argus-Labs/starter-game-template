@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/heroiclabs/nakama-common v1.27.0
-	pkg.world.dev/world-engine/sign v0.1.6-alpha
+	pkg.world.dev/world-engine/sign v0.1.7-alpha
 )
 
 require (
