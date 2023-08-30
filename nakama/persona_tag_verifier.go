@@ -71,7 +71,6 @@ func (p *personaTagVerifier) consume() {
 		if currTxHash == "" {
 			continue
 		}
-		continue
 		if err := p.attemptVerification(currTxHash); err != nil {
 			p.logger.Error("failed to verify persona tag: %v", err)
 		}
