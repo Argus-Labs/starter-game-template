@@ -1,0 +1,74 @@
+version: "3"
+services:
+  postgres:
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all
+    environment:
+      - POSTGRES_DB=nakama
+      - POSTGRES_PASSWORD=localdb
+    expose:
+      - "5432"
+    image: postgres:12.2-alpine
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "nakama"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - data:/var/lib/postgresql/data
+  redis: # This doesn't have the correct persistence settings. Don't use on for prod.
+    image: redis:latest
+    command: redis-server # TODO: This runs without password. Don't use for prod.
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    restart: always
+  cardinal:
+    image: us-docker.pkg.dev/argus-labs/starter-game-template/cardinal:${STARTER_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      - redis
+    expose:
+      - "3333"
+    ports:
+      - "3333:3333"
+    environment:
+      - CARDINAL_PORT=3333
+      - REDIS_ADDR=redis:6379
+      - REDIS_MODE=normal
+  nakama:
+    image: us-docker.pkg.dev/argus-labs/starter-game-template/nakama:${STARTER_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - cardinal
+    environment:
+      - CARDINAL_ADDR=${CARDINAL_ADDR:-http://cardinal:3333}
+      - CARDINAL_NAMESPACE=0
+    entrypoint:
+      - "/bin/sh"
+      - "-ecx"
+      - >
+        /nakama/nakama migrate up --database.address postgres:localdb@postgres:5432/nakama &&
+        exec /nakama/nakama --config /nakama/data/local.yml --database.address postgres:localdb@postgres:5432/nakama        
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    expose:
+      - "7349"
+      - "7350"
+      - "7351"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7350/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    links:
+      - "postgres:db"
+    ports:
+      - "7349:7349"
+      - "7350:7350"
+      - "7351:7351"
+volumes:
+  data:

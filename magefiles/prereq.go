@@ -6,15 +6,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/magefile/mage/sh"
-)
-
-const (
-	goprivateEnv            = "GOPRIVATE"
-	goprivateURLArgusLabs   = "github.com/argus-labs"
-	goprivateURLWorldEngine = goprivateURLArgusLabs + "/world-engine"
 )
 
 // allOutput runs the command and returns the stdout and stderr. Nothing is printed to stdout and stderr.
@@ -48,16 +41,6 @@ func checkPrereq(verbose bool) error {
 			fmt.Println("success")
 		}
 	}
-
-	check(goprivateEnv, func() error {
-		out, err := allOutput("go", "env", goprivateEnv)
-		if err != nil {
-			return fmt.Errorf("problem getting env variable %q", goprivateEnv)
-		} else if !strings.Contains(out, goprivateURLArgusLabs) {
-			return fmt.Errorf("the env variable %q should contain %q or %q", goprivateEnv, goprivateURLArgusLabs, goprivateURLWorldEngine)
-		}
-		return nil
-	})
 
 	check("Docker", func() error {
 		if _, err := allOutput("docker", "-v"); err != nil {
