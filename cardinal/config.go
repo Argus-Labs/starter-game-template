@@ -30,7 +30,7 @@ func GetConfig() Config {
 
 func NewWorld(cfg Config) *ecs.World {
 	if cfg.Mode == "normal" {
-		utils.NewWorld(cfg.RedisAddr, cfg.RedisPass)
+		return utils.NewWorld(cfg.RedisAddr, cfg.RedisPass)
 	}
 	return utils.NewEmbeddedWorld()
 }
