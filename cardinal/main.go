@@ -73,7 +73,7 @@ func main() {
 	world.StartGameLoop(context.Background(), time.Second)
 
 	// TODO: When launching to production, you should enable signature verification.
-	h, err := server.NewHandler(world, server.WithPort(cfg.CardinalPort))
+	h, err := server.NewHandler(world, server.WithPort(cfg.CardinalPort), server.DisableSignatureVerification())
 	if err != nil {
 		panic(err)
 	}
