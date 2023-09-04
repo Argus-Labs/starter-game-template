@@ -60,35 +60,7 @@ Alternatively, killing the `mage start` process will also stop Nakama and Cardin
 Note, for now, if any Cardinal endpoints have been added or removed Nakama must be relaunched (via `mage stop` and `mage start`).
 We will add a future to hot reload this in the future.
 
-# Running with the prebuilt Docker Images
-
-Prerequisites:
-- Docker installed
-
-Docker Images Container Registry URLs:
-- Cardinal: `us-docker.pkg.dev/argus-labs/starter-game-template/cardinal:<latest/tag_version>`
-- Nakama: `us-docker.pkg.dev/argus-labs/starter-game-template/nakama:<latest/tag_version>`
-
-
-To start the starter-game-template Nakama and Cardinal with prebuilt Docker Images:
-
-```bash
-docker compose -f docker-compose-prebuilt.yml up --detach --wait
-```
-
-To check the services status & logs:
-
-```bash
-docker compose -f docker-compose-prebuilt.yml ps
-docker compose -f docker-compose-prebuilt.yml logs
-```
-
-To stop Nakama and Cardinal:
-```bash
-docker compose -f docker-compose-prebuilt.yml down
-```
-
-# Verify the Server is Running
+# Verify Nakama is Running
 
 Visit `localhost:7351` in a web browser to access the Nakama console. For local development, use `admin:password` as your login
 credentials.
