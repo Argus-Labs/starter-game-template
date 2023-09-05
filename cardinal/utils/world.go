@@ -1,14 +1,25 @@
 package utils
 
 import (
+	"os"
+
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+
 	"pkg.world.dev/world-engine/cardinal/ecs"
 	"pkg.world.dev/world-engine/cardinal/ecs/inmem"
 	"pkg.world.dev/world-engine/cardinal/ecs/storage"
 )
 
+func worldPrettyLogOption(world *ecs.World) {
+	prettyLogger := log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	world.Logger.Logger = &prettyLogger
+	world.Logger.Info().Msg("Pretty logger activated.")
+}
+
 // NewWorld is the recommended way to run the game
-func NewWorld(addr string, password string) *ecs.World {
+func NewWorld(addr string, password string, deployMode string) *ecs.World {
+	options := make([]ecs.Option, 0)
 	log.Log().Msg("Running in normal mode, using external Redis")
 	if addr == "" {
 		log.Log().Msg("Redis address is not set, using fallback - localhost:6379")
@@ -18,6 +29,9 @@ func NewWorld(addr string, password string) *ecs.World {
 		log.Log().Msg("Redis password is not set, make sure to set up redis with password in prod")
 		password = ""
 	}
+	if deployMode == "development" {
+		options = append(options, worldPrettyLogOption)
+	}
 
 	rs := storage.NewRedisStorage(storage.Options{
 		Addr:     addr,
@@ -25,7 +39,7 @@ func NewWorld(addr string, password string) *ecs.World {
 		DB:       0,        // use default DB
 	}, "world")
 	worldStorage := storage.NewWorldStorage(&rs)
-	world, err := ecs.NewWorld(worldStorage)
+	world, err := ecs.NewWorld(worldStorage, options...)
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +51,11 @@ func NewWorld(addr string, password string) *ecs.World {
 // because it doesn't require spinning up Redis in a container.
 // It runs a Redis server as a part of the Go process.
 // NOTE: worlds with embedded redis are incompatible with Cardinal Editor.
-func NewEmbeddedWorld() *ecs.World {
+func NewEmbeddedWorld(deployMode string) *ecs.World {
 	log.Log().Msg("Running in embedded mode, using embedded miniredis")
-	return inmem.NewECSWorld()
+	options := make([]ecs.Option, 0)
+	if deployMode == "development" {
+		options = append(options, worldPrettyLogOption)
+	}
+	return inmem.NewECSWorld(options...)
 }
