@@ -12,6 +12,7 @@ type Config struct {
 	Mode         string
 	RedisAddr    string
 	RedisPass    string
+	DeployMode   string
 }
 
 func GetConfig() Config {
@@ -19,18 +20,20 @@ func GetConfig() Config {
 	redisAddr := os.Getenv("REDIS_ADDR")
 	redisPassword := os.Getenv("REDIS_PASSWORD")
 	cardinalPort := os.Getenv("CARDINAL_PORT")
+	deployMode := os.Getenv("DEPLOY_MODE")
 
 	return Config{
 		CardinalPort: cardinalPort,
 		Mode:         mode,
 		RedisAddr:    redisAddr,
 		RedisPass:    redisPassword,
+		DeployMode:   deployMode,
 	}
 }
 
 func NewWorld(cfg Config) *ecs.World {
 	if cfg.Mode == "normal" {
-		return utils.NewWorld(cfg.RedisAddr, cfg.RedisPass)
+		return utils.NewWorld(cfg.RedisAddr, cfg.RedisPass, cfg.DeployMode)
 	}
-	return utils.NewEmbeddedWorld()
+	return utils.NewEmbeddedWorld(cfg.DeployMode)
 }

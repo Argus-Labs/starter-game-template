@@ -4,9 +4,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
-	"os"
 )
 
 // Check verifies that various prerequisites are installed or configured on your machine
@@ -21,7 +22,6 @@ func Clear() error {
 	}
 	return nil
 }
-
 
 // Test runs the test suite
 func Test() error {
@@ -125,6 +125,7 @@ func Dev() error {
 	os.Setenv("REDIS_MODE", "normal")
 	os.Setenv("CARDINAL_PORT", "3333")
 	os.Setenv("REDIS_ADDR", "localhost:6379")
+	os.Setenv("DEPLOY_MODE", "development")
 
 	// Run redis in a docker container because Miniredis doesn't work with Retool
 	// NOTE: this is because it doesn't implement CLIENT
