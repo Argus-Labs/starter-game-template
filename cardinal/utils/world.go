@@ -46,7 +46,7 @@ func NewEmbeddedWorld(deployMode string) *ecs.World {
 	log.Log().Msg("Running in embedded mode, using embedded miniredis")
 	options := make([]ecs.Option, 0)
 	if deployMode == "development" {
-		options = append(options, worldPrettyLogOption)
+		options = append(options, ecs.WithPrettyLog())
 	}
 	return inmem.NewECSWorld(options...)
 }
