@@ -1,21 +1,12 @@
 package utils
 
 import (
-	"os"
-
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"pkg.world.dev/world-engine/cardinal/ecs"
 	"pkg.world.dev/world-engine/cardinal/ecs/inmem"
 	"pkg.world.dev/world-engine/cardinal/ecs/storage"
 )
-
-func worldPrettyLogOption(world *ecs.World) {
-	prettyLogger := log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	world.Logger.Logger = &prettyLogger
-	world.Logger.Info().Msg("Pretty logger activated.")
-}
 
 // NewWorld is the recommended way to run the game
 func NewWorld(addr string, password string, deployMode string) *ecs.World {
@@ -30,7 +21,7 @@ func NewWorld(addr string, password string, deployMode string) *ecs.World {
 		password = ""
 	}
 	if deployMode == "development" {
-		options = append(options, worldPrettyLogOption)
+		options = append(options, ecs.WithPrettyLog())
 	}
 
 	rs := storage.NewRedisStorage(storage.Options{
