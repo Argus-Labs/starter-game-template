@@ -25,12 +25,13 @@ func makeGitIgnore() (*ignore.GitIgnore, error) {
 // The module path parameter should be set to your code's repository. See https://golang.org/ref/mod#go-mod-init
 // for more info about go mod.
 func Copy(target, modulePath string) error {
+	mg.Deps(exitMagefilesDir)
+
 	ignore, err := makeGitIgnore()
 	if err != nil {
 		return err
 	}
 
-	mg.Deps(exitMagefilesDir)
 	if err := os.MkdirAll(target, os.ModePerm); err != nil {
 		return err
 	}
