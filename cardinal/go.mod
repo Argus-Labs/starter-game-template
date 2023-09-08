@@ -130,7 +130,7 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	pkg.world.dev/world-engine/cardinal v0.1.33-alpha
+	pkg.world.dev/world-engine/cardinal v0.1.34-alpha
 	pkg.world.dev/world-engine/chain v0.1.11-alpha // indirect
 	pkg.world.dev/world-engine/sign v0.1.7-alpha // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect

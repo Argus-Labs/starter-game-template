@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/argus-labs/starter-game-template/cardinal/game"
-	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type ConstantRequest struct {
@@ -16,9 +16,9 @@ type ConstantResponse struct {
 	Value interface{} `json:"value"`
 }
 
-var Constant = ecs.NewReadType[ConstantRequest, ConstantResponse]("constant", queryConstant)
+var Constant = cardinal.NewReadType[ConstantRequest, ConstantResponse]("constant", queryConstant)
 
-func queryConstant(_ *ecs.World, req ConstantRequest) (ConstantResponse, error) {
+func queryConstant(_ *cardinal.World, req ConstantRequest) (ConstantResponse, error) {
 	var value interface{} = nil
 
 	// Handle all constants query

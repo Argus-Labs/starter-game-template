@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/argus-labs/starter-game-template/cardinal/utils"
-	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type Config struct {
@@ -31,7 +31,7 @@ func GetConfig() Config {
 	}
 }
 
-func NewWorld(cfg Config) *ecs.World {
+func NewWorld(cfg Config) *cardinal.World {
 	if cfg.Mode == "normal" {
 		return utils.NewWorld(cfg.RedisAddr, cfg.RedisPass, cfg.DeployMode)
 	}

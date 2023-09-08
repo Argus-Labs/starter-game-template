@@ -2,12 +2,12 @@ package game
 
 import (
 	"github.com/argus-labs/starter-game-template/cardinal/component"
-	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type IArchetype struct {
 	Label      string
-	Components []ecs.IComponentType
+	Components []cardinal.AnyComponentType
 }
 
 var (
@@ -15,6 +15,6 @@ var (
 
 	playerArchetype = IArchetype{
 		Label:      "player",
-		Components: []ecs.IComponentType{component.Player, component.Health},
+		Components: []cardinal.AnyComponentType{component.Player, component.Health},
 	}
 )

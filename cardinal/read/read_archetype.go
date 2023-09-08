@@ -6,9 +6,7 @@ import (
 	"reflect"
 
 	"github.com/argus-labs/starter-game-template/cardinal/game"
-	"pkg.world.dev/world-engine/cardinal/ecs"
-	"pkg.world.dev/world-engine/cardinal/ecs/filter"
-	"pkg.world.dev/world-engine/cardinal/ecs/storage"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type ArchetypeRequest struct {
@@ -20,9 +18,9 @@ type ArchetypeResponse struct {
 	Value interface{} `json:"value"`
 }
 
-var Archetype = ecs.NewReadType[ArchetypeRequest, ArchetypeResponse]("archetype", queryArchetype)
+var Archetype = cardinal.NewReadType[ArchetypeRequest, ArchetypeResponse]("archetype", queryArchetype)
 
-func queryArchetype(world *ecs.World, req ArchetypeRequest) (ArchetypeResponse, error) {
+func queryArchetype(world *cardinal.World, req ArchetypeRequest) (ArchetypeResponse, error) {
 	var entities []interface{}
 	var errs []error
 
@@ -41,8 +39,8 @@ func queryArchetype(world *ecs.World, req ArchetypeRequest) (ArchetypeResponse, 
 	}
 
 	// Query for the archetype
-	query := ecs.NewQuery(filter.Exact(archetype.Components...))
-	query.Each(world, func(id storage.EntityID) bool {
+	query := cardinal.NewQuery(cardinal.Exact(archetype.Components...))
+	query.Each(world, func(id cardinal.EntityID) bool {
 		entity := make(map[string]interface{})
 		entity["id"] = id
 

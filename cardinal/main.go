@@ -1,16 +1,12 @@
 package main
 
 import (
-	"context"
-	"time"
-
 	"github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/read"
 	"github.com/argus-labs/starter-game-template/cardinal/system"
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"pkg.world.dev/world-engine/cardinal/server"
 )
 
 func main() {
@@ -60,22 +56,11 @@ func main() {
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
 	// For example, you may want to run the attack system before the regen system
 	// so that the player's HP is subtracted (and player killed if it reaches 0) before HP is regenerated.
-	world.AddSystem(system.AttackSystem)
-	world.AddSystem(system.RegenSystem)
-	world.AddSystem(system.PlayerSpawnerSystem)
+	world.RegisterSystems(system.AttackSystem,
+		system.RegenSystem,
+		system.PlayerSpawnerSystem)
 
-	// Load game state
-	err = world.LoadGameState()
-	if err != nil {
+	if err := world.StartGame(); err != nil {
 		log.Fatal().Err(err)
 	}
-
-	world.StartGameLoop(context.Background(), time.Second)
-
-	// TODO: When launching to production, you should enable signature verification.
-	h, err := server.NewHandler(world, server.WithPort(cfg.CardinalPort), server.DisableSignatureVerification())
-	if err != nil {
-		panic(err)
-	}
-	h.Serve()
 }

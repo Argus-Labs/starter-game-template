@@ -1,9 +1,11 @@
 package component
 
-import "pkg.world.dev/world-engine/cardinal/ecs"
+import (
+	"pkg.world.dev/world-engine/cardinal"
+)
 
 type HealthComponent struct {
 	HP int
 }
 
-var Health = ecs.NewComponentType[HealthComponent]()
+var Health = cardinal.NewComponentType[HealthComponent]()
