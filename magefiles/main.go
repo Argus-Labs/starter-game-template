@@ -81,6 +81,19 @@ func Start() error {
 	return nil
 }
 
+// Start starts Nakama and cardinal in debug mode with cardinal debugger listening on port 40000
+// Note Cardinal server will not run until a debugger is attached port 40000
+func StartDebug() error {
+	mg.Deps(exitMagefilesDir)
+	if err := prepareDirs("cardinal", "nakama"); err != nil {
+		return err
+	}
+	if err := sh.RunV("docker", "compose", "-f", "docker-compose-debug.yml", "up", "--build", "cardinal", "nakama"); err != nil {
+		return err
+	}
+	return nil
+}
+
 // StartDetach starts Nakama and cardinal with detach and wait-timeout 60s (suit for CI workflow)
 func StartDetach() error {
 	mg.Deps(exitMagefilesDir)

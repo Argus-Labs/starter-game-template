@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"regexp"
 	"sync"
 
 	"github.com/heroiclabs/nakama-common/api"
@@ -277,7 +278,7 @@ func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initialize
 	if err != nil {
 		return fmt.Errorf("failed to get list of cardinal endpoints: %w", err)
 	}
-
+	matchQueryRoutes := regexp.MustCompile("^query/*")
 	for _, e := range endpoints {
 		logger.Debug("registering: %v", e)
 		currEndpoint := e
@@ -286,13 +287,44 @@ func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initialize
 		}
 		err := initializer.RegisterRpc(currEndpoint, func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
 			logger.Debug("Got request for %q", currEndpoint)
-
-			signedPayload, err := makeSignedPayload(ctx, nk, payload)
+			var resultPayload io.Reader
+			if !matchQueryRoutes.MatchString(currEndpoint) { //queries are not signed.
+				logger.Debug("The %s endpoint requires a signed payload", currEndpoint)
+				signedPayload, err := makeSignedPayload(ctx, nk, payload)
+				if err != nil {
+					return logError(logger, "unable to make signed payload: %v", err)
+				}
+				resultPayload = signedPayload
+			} else {
+				logger.Debug("The %s endpoint requires an unsigned payload", currEndpoint)
+				// Make sure the given string/[]byte is valid json
+				payloadBytes := []byte(payload)
+				if !json.Valid(payloadBytes) {
+					return "", fmt.Errorf("data %q is not valid json", string(payloadBytes))
+				}
+				// Unmarshal, then marshal the data to normalize it. For example, extra spaces will be removed.
+				// This is required because when the signed payload is serialized/deserialized those spaces will also
+				// be lost. If they are not removed beforehand, the hashes of the message before serialization and after
+				// will be different.
+				// update on the above comment 9/18/2023:
+				// This json normalization logic was extracted from signed payload. The payload is no longer signed in this branch
+				// of logic but keeping the normalization here in case there's any crypto stuff down the line.
+				m := map[string]any{}
+				if err := json.Unmarshal(payloadBytes, &m); err != nil {
+					return "", err
+				}
+				formattedPayloadBytes, err := json.Marshal(m)
+				if err != nil {
+					return "", err
+				}
+				resultPayload = bytes.NewReader(formattedPayloadBytes)
+			}
 			if err != nil {
 				return logError(logger, "unable to make signed payload: %v", err)
 			}
 
-			req, err := http.NewRequestWithContext(ctx, "POST", makeURL(currEndpoint), signedPayload)
+			req, err := http.NewRequestWithContext(ctx, "POST", makeURL(currEndpoint), resultPayload)
+			req.Header.Set("Content-Type", "application/json")
 			if err != nil {
 				return logError(logger, "request setup failed for endpoint %q: %v", currEndpoint, err)
 			}

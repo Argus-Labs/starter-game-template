@@ -17,11 +17,12 @@ import (
 )
 
 var (
-	listTxEndpointsEndpoint     = "list/tx-endpoints"
-	listReadEndpoints           = "list/read-endpoints"
-	createPersonaEndpoint       = "tx-create-persona"
-	readPersonaSignerEndpoint   = "read-persona-signer"
-	transactionReceiptsEndpoint = "transaction-receipts"
+	listEndpoints = "query/http/endpoints"
+	//listTxEndpointsEndpoint     = "list/tx-endpoints"
+	//listReadEndpoints           = "list/read-endpoints"
+	createPersonaEndpoint       = "tx/persona/create-persona"
+	readPersonaSignerEndpoint   = "query/persona/signer"
+	transactionReceiptsEndpoint = "query/receipts/list"
 
 	readPersonaSignerStatusUnknown   = "unknown"
 	readPersonaSignerStatusAvailable = "available"
@@ -50,9 +51,14 @@ func makeURL(resource string) string {
 	return fmt.Sprintf("%s/%s", globalCardinalAddress, resource)
 }
 
-func cardinalListEndpoints(path string) ([]string, error) {
-	url := makeURL(path)
-	resp, err := http.Get(url)
+type endpoints struct {
+	TxEndpoints    []string `json:"tx_endpoints"`
+	QueryEndpoints []string `json:"query_endpoints"`
+}
+
+func cardinalGetEndpointsStruct() (*endpoints, error) {
+	url := makeURL(listEndpoints)
+	resp, err := http.Post(url, "", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,27 +67,35 @@ func cardinalListEndpoints(path string) ([]string, error) {
 		return nil, fmt.Errorf("list endpoints (at %q) failed with status code %d: %v", url, resp.StatusCode, string(buf))
 	}
 	dec := json.NewDecoder(resp.Body)
-	var endpoints []string
-	if err := dec.Decode(&endpoints); err != nil {
+	var endpointsStruct endpoints
+	if err := dec.Decode(&endpointsStruct); err != nil {
 		return nil, err
 	}
-	return endpoints, nil
+	return &endpointsStruct, nil
+}
 
+func cardinalListQueryEndpoints() ([]string, error) {
+	endpointsStruct, err := cardinalGetEndpointsStruct()
+	if err != nil {
+		return nil, err
+	}
+	return endpointsStruct.QueryEndpoints, nil
+}
+
+func cardinalListTxEndpoints() ([]string, error) {
+	endpointsStruct, err := cardinalGetEndpointsStruct()
+	if err != nil {
+		return nil, err
+	}
+	return endpointsStruct.QueryEndpoints, nil
 }
 
 func cardinalListAllEndpoints() ([]string, error) {
-	var endpoints []string
-	txs, err := cardinalListEndpoints(listTxEndpointsEndpoint)
+	endpointsStruct, err := cardinalGetEndpointsStruct()
 	if err != nil {
 		return nil, err
 	}
-	endpoints = append(endpoints, txs...)
-	reads, err := cardinalListEndpoints(listReadEndpoints)
-	if err != nil {
-		return nil, err
-	}
-	endpoints = append(endpoints, reads...)
-	return endpoints, nil
+	return append(endpointsStruct.TxEndpoints, endpointsStruct.QueryEndpoints...), nil
 }
 
 func doRequest(req *http.Request) (*http.Response, error) {
@@ -124,6 +138,7 @@ func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, persona
 	if err != nil {
 		return "", 0, fmt.Errorf("unable to make request to %q: %w", createPersonaEndpoint, err)
 	}
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := doRequest(req)
 	if err != nil {
@@ -162,6 +177,7 @@ func cardinalQueryPersonaSigner(ctx context.Context, personaTag string, tick uin
 	if err != nil {
 		return "", err
 	}
+	httpReq.Header.Set("Content-Type", "application/json")
 	httpResp, err := doRequest(httpReq)
 	if err != nil {
 		return "", err

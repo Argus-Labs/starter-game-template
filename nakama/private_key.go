@@ -110,7 +110,7 @@ func setNonce(ctx context.Context, nk runtime.NakamaModule, n uint64) error {
 func initPrivateKey(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule) error {
 	privateKeyHex, err := getPrivateKeyHex(ctx, nk)
 	if err != nil {
-		if err != ErrorNoStorageObjectFound {
+		if !errors.Is(err, ErrorNoStorageObjectFound) {
 			return fmt.Errorf("failed to get private key: %w", err)
 		}
 		logger.Debug("no private key found; creating a new one")

@@ -6,4 +6,4 @@ type HealthComponent struct {
 	HP int
 }
 
-var Health = ecs.NewComponentType[HealthComponent]()
+var Health = ecs.NewComponentType[HealthComponent]("Health")

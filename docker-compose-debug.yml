@@ -28,17 +28,25 @@ services:
       - "6379:6379"
     restart: always
   cardinal:
-    build: ./cardinal
+    build:
+      context: ./cardinal
+      dockerfile: Dockerfile.debug
     depends_on:
       - redis
     expose:
       - "3333"
+      - "40000"
     ports:
       - "3333:3333"
+      - "40000:40000"
     environment:
       - CARDINAL_PORT=3333
       - REDIS_ADDR=redis:6379
       - REDIS_MODE=normal
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp:unconfined"
   nakama:
     platform: linux/amd4
     build: ./nakama
@@ -53,7 +61,7 @@ services:
       - "-ecx"
       - >
         /nakama/nakama migrate up --database.address postgres:localdb@postgres:5432/nakama &&
-        exec /nakama/nakama --config /nakama/data/local.yml --database.address postgres:localdb@postgres:5432/nakama        
+        exec /nakama/nakama --config /nakama/data/local.yml --database.address postgres:localdb@postgres:5432/nakama
     extra_hosts:
       - "host.docker.internal:host-gateway"
     expose:

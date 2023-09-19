@@ -113,6 +113,7 @@ func (r *receiptsDispatcher) getBatchOfReceiptsFromCardinal(startTick uint64) (r
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := doRequest(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query %q: %w", url, err)

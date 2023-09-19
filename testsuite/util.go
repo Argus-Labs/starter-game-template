@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"os"
 	"testing"
-
-	"gotest.tools/v3/assert"
 )
 
 const (
@@ -23,8 +21,10 @@ type nakamaClient struct {
 
 func newClient(t *testing.T) *nakamaClient {
 	host := os.Getenv(envNakamaAddress)
-	assert.Check(t, host != "", "nakama address must be set via environment variable %s", envNakamaAddress)
-
+	//assert.Check(t, host != "", "nakama address must be set via environment variable %s", envNakamaAddress)
+	if host == "" {
+		host = "http://127.0.0.1:7350"
+	}
 	h := &nakamaClient{
 		addr: host,
 	}
@@ -44,6 +44,9 @@ func (c *nakamaClient) registerDevice(username, deviceID string) error {
 	}
 	reader := bytes.NewReader(buf)
 	req, err := http.NewRequest("POST", url, reader)
+	if err != nil {
+		return err
+	}
 	req.Header.Set("Content-Type", "application/json")
 	// defaultkey is the default server key. See https://heroiclabs.com/docs/nakama/concepts/authentication/ for more
 	// details.
