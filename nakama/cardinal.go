@@ -17,9 +17,7 @@ import (
 )
 
 var (
-	listEndpoints = "query/http/endpoints"
-	//listTxEndpointsEndpoint     = "list/tx-endpoints"
-	//listReadEndpoints           = "list/read-endpoints"
+	listEndpoints               = "query/http/endpoints"
 	createPersonaEndpoint       = "tx/persona/create-persona"
 	readPersonaSignerEndpoint   = "query/persona/signer"
 	transactionReceiptsEndpoint = "query/receipts/list"

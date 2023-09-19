@@ -19,6 +19,8 @@ import (
 )
 
 func TestTransactionAndCQLAndRead(t *testing.T) {
+
+	//Test persona
 	privateKey, err := crypto.GenerateKey()
 	assert.NilError(t, err)
 	signerAddr := crypto.PubkeyToAddress(privateKey.PublicKey).Hex()
@@ -36,7 +38,6 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 	assert.NilError(t, waitForAcceptedPersonaTag(c))
 	type CreatePlayerTxMsg struct{ Nickname string }
 	payload := CreatePlayerTxMsg{"Bob"}
-	//signedPayload, err := sign.NewSignedPayload(privateKey, personaTag, "world", 100, payload)
 	resp, err = c.rpc("tx/game/create-player", payload)
 	assert.NilError(t, err)
 	body := copyBody(resp)
@@ -59,7 +60,6 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 			CQL string `json:CQL`
 		}{"CONTAINS(Player)"})
 		assert.NilError(t, err)
-		//fmt.Println(copyBody(resp))
 		assert.Equal(t, 200, resp.StatusCode)
 		results, err := io.ReadAll(resp.Body)
 
@@ -80,6 +80,7 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 		}
 	}
 
+	//Test Read
 	type ConstantRequest struct {
 		Label string `json:"label"`
 	}
