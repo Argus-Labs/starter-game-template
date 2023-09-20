@@ -72,30 +72,6 @@ func cardinalGetEndpointsStruct() (*endpoints, error) {
 	return &endpointsStruct, nil
 }
 
-func cardinalListQueryEndpoints() ([]string, error) {
-	endpointsStruct, err := cardinalGetEndpointsStruct()
-	if err != nil {
-		return nil, err
-	}
-	return endpointsStruct.QueryEndpoints, nil
-}
-
-func cardinalListTxEndpoints() ([]string, error) {
-	endpointsStruct, err := cardinalGetEndpointsStruct()
-	if err != nil {
-		return nil, err
-	}
-	return endpointsStruct.QueryEndpoints, nil
-}
-
-func cardinalListAllEndpoints() ([]string, error) {
-	endpointsStruct, err := cardinalGetEndpointsStruct()
-	if err != nil {
-		return nil, err
-	}
-	return append(endpointsStruct.TxEndpoints, endpointsStruct.QueryEndpoints...), nil
-}
-
 func doRequest(req *http.Request) (*http.Response, error) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
