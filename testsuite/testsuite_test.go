@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -13,7 +14,100 @@ import (
 	"time"
 
 	"gotest.tools/v3/assert"
+
+	"github.com/ethereum/go-ethereum/crypto"
 )
+
+func TestTransactionAndCQLAndRead(t *testing.T) {
+
+	//Test persona
+	privateKey, err := crypto.GenerateKey()
+	assert.NilError(t, err)
+	signerAddr := crypto.PubkeyToAddress(privateKey.PublicKey).Hex()
+	username, deviceID, personaTag := triple(randomString())
+	c := newClient(t)
+	assert.NilError(t, c.registerDevice(username, deviceID))
+
+	resp, err := c.rpc("nakama/claim-persona", map[string]any{
+		"persona_tag":    personaTag,
+		"signer_address": signerAddr,
+	})
+	assert.NilError(t, err, "claim-persona failed")
+	assert.Equal(t, 200, resp.StatusCode, copyBody(resp))
+
+	assert.NilError(t, waitForAcceptedPersonaTag(c))
+	type CreatePlayerTxMsg struct {
+		Nickname string `json:"nickname"`
+	}
+	payload := CreatePlayerTxMsg{"Bob"}
+	resp, err = c.rpc("tx/game/create-player", payload)
+	assert.NilError(t, err)
+	body := copyBody(resp)
+	assert.Equal(t, 200, resp.StatusCode, body)
+
+	//Test CQL
+	type Data struct {
+		Nickname string `json:"nickname,omitempty"`
+		HP       int    `json:"HP,omitempty"`
+	}
+
+	type Item struct {
+		ID   int    `json:"id"`
+		Data []Data `json:"data"`
+	}
+	finalResults := []Item{}
+	currentTs := time.Now()
+	maxTime := 10 * time.Second
+
+	//hits the cql endpoint and eventually expects at least > 1 result
+	//Since the tests and http server move faster than the game loop, initial tests actually
+	//return 0 results so this loop will keep going until a timeout or the query gets one result.
+	for len(finalResults) <= 0 {
+		resp, err = c.rpc("query/game/cql", struct {
+			CQL string `json:CQL`
+		}{"CONTAINS(Player)"})
+		assert.NilError(t, err)
+		assert.Equal(t, 200, resp.StatusCode)
+		results, err := io.ReadAll(resp.Body)
+
+		err = json.Unmarshal(results, &finalResults)
+		assert.NilError(t, err)
+		for _, res := range finalResults {
+			for i, v := range res.Data {
+				if i == 0 {
+					assert.Equal(t, v.Nickname, "Bob")
+					assert.Equal(t, v.HP, 0)
+				} else if i == 1 {
+					assert.Equal(t, v.Nickname, "")
+					assert.Assert(t, v.HP != 0)
+				} else {
+					t.Fatal("Should not have anymore components")
+				}
+			}
+		}
+		if time.Now().Second()-currentTs.Second() > int(maxTime) {
+			assert.Assert(t, false, "timeout occured here, CQL query should return some results eventually")
+		}
+	}
+
+	//Test Read
+	type ConstantRequest struct {
+		Label string `json:"label"`
+	}
+	type ConstantResponse struct {
+		Label string      `json:"label"`
+		Value interface{} `json:"value"`
+	}
+	resp, err = c.rpc("query/game/constant", ConstantRequest{"all"})
+	assert.NilError(t, err)
+	bodyBytes, err := io.ReadAll(resp.Body)
+	assert.NilError(t, err)
+	typedResp := ConstantResponse{}
+	err = json.Unmarshal(bodyBytes, &typedResp)
+	assert.Equal(t, typedResp.Label, "all")
+	assert.NilError(t, err)
+
+}
 
 func TestCanShowPersona(t *testing.T) {
 	username, deviceID, personaTag := triple(randomString())

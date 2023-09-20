@@ -13,6 +13,7 @@ replace (
 require github.com/rs/zerolog v1.30.0
 
 require (
+	github.com/alecthomas/participle/v2 v2.1.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/go-openapi/analysis v0.21.4 // indirect
 	github.com/go-openapi/errors v0.20.3 // indirect
@@ -130,8 +131,8 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	pkg.world.dev/world-engine/cardinal v0.1.33-alpha
+	pkg.world.dev/world-engine/cardinal v0.1.36-alpha
 	pkg.world.dev/world-engine/chain v0.1.11-alpha // indirect
-	pkg.world.dev/world-engine/sign v0.1.7-alpha // indirect
+	pkg.world.dev/world-engine/sign v0.1.8-alpha // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )

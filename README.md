@@ -106,7 +106,7 @@ A persona tag is essentially a cardinal based user. To create a persona tag in y
 endpoint from the dropdown. Make sure to paste in a valid User ID into the User ID field. Set the request body to:
 ```json
 {
-  "persona_tag": "some-persona-tag",
+  "persona_tag": "some-persona-tag"
 }
 ```
 

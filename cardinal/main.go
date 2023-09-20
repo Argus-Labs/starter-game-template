@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
@@ -73,9 +74,15 @@ func main() {
 	world.StartGameLoop(context.Background(), time.Second)
 
 	// TODO: When launching to production, you should enable signature verification.
+	fmt.Println("Serving Cardinal at: ", cfg.CardinalPort)
 	h, err := server.NewHandler(world, server.WithPort(cfg.CardinalPort), server.DisableSignatureVerification())
 	if err != nil {
 		panic(err)
 	}
-	h.Serve()
+	err = h.Serve()
+	if err != nil {
+		log.Fatal().Err(err)
+		return
+	}
+
 }

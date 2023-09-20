@@ -273,46 +273,81 @@ func handleShowPersona(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 // initCardinalEndpoints queries the cardinal server to find the list of existing endpoints, and attempts to
 // set up RPC wrappers around each one.
 func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initializer) error {
-	endpoints, err := cardinalListAllEndpoints()
+	txEndpoints, queryEndpoints, err := cardinalGetEndpointsStruct()
 	if err != nil {
-		return fmt.Errorf("failed to get list of cardinal endpoints: %w", err)
+		return err
 	}
 
-	for _, e := range endpoints {
-		logger.Debug("registering: %v", e)
-		currEndpoint := e
-		if currEndpoint[0] == '/' {
-			currEndpoint = currEndpoint[1:]
-		}
-		err := initializer.RegisterRpc(currEndpoint, func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
-			logger.Debug("Got request for %q", currEndpoint)
-
-			signedPayload, err := makeSignedPayload(ctx, nk, payload)
-			if err != nil {
-				return logError(logger, "unable to make signed payload: %v", err)
-			}
-
-			req, err := http.NewRequestWithContext(ctx, "POST", makeURL(currEndpoint), signedPayload)
-			if err != nil {
-				return logError(logger, "request setup failed for endpoint %q: %v", currEndpoint, err)
-			}
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				return logError(logger, "request failed for endpoint %q: %v", currEndpoint, err)
-			}
-			if resp.StatusCode != 200 {
-				body, _ := io.ReadAll(resp.Body)
-				return logError(logger, "bad status code: %v: %s", resp.Status, body)
-			}
-			str, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return logError(logger, "can't read body: %v", err)
-			}
-			return string(str), nil
-		})
+	createSignedPayload := func(payload string, endpoint string, nk runtime.NakamaModule, ctx context.Context) (io.Reader, error) {
+		logger.Debug("The %s endpoint requires a signed payload", endpoint)
+		signedPayload, err := makeSignedPayload(ctx, nk, payload)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		return signedPayload, nil
+	}
+
+	createUnsignedPayload := func(payload string, endpoint string, _ runtime.NakamaModule, _ context.Context) (io.Reader, error) {
+		payloadBytes := []byte(payload)
+		formattedPayloadBuffer := bytes.NewBuffer([]byte{})
+		if !json.Valid(payloadBytes) {
+			return nil, fmt.Errorf("data %q is not valid json", string(payloadBytes))
+		}
+		err = json.Compact(formattedPayloadBuffer, payloadBytes)
+		if err != nil {
+			return nil, err
+		}
+		return formattedPayloadBuffer, nil
+	}
+
+	registerEndpoints := func(endpoints []string, createPayload func(string, string, runtime.NakamaModule, context.Context) (io.Reader, error)) error {
+		for _, e := range endpoints {
+			logger.Debug("registering: %v", e)
+			currEndpoint := e
+			if currEndpoint[0] == '/' {
+				currEndpoint = currEndpoint[1:]
+			}
+			err := initializer.RegisterRpc(currEndpoint, func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
+				logger.Debug("Got request for %q", currEndpoint)
+				var resultPayload io.Reader
+				resultPayload, err = createPayload(payload, currEndpoint, nk, ctx)
+				if err != nil {
+					return logError(logger, "unable to make payload: %w", err)
+				}
+
+				req, err := http.NewRequestWithContext(ctx, "POST", makeURL(currEndpoint), resultPayload)
+				req.Header.Set("Content-Type", "application/json")
+				if err != nil {
+					return logError(logger, "request setup failed for endpoint %q: %w", currEndpoint, err)
+				}
+				resp, err := http.DefaultClient.Do(req)
+				if err != nil {
+					return logError(logger, "request failed for endpoint %q: %w", currEndpoint, err)
+				}
+				if resp.StatusCode != 200 {
+					body, _ := io.ReadAll(resp.Body)
+					return logError(logger, "bad status code: %w: %s", resp.Status, body)
+				}
+				bodyStr, err := io.ReadAll(resp.Body)
+				if err != nil {
+					return logError(logger, "can't read body: %w", err)
+				}
+				return string(bodyStr), nil
+			})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	err = registerEndpoints(txEndpoints, createSignedPayload)
+	if err != nil {
+		return err
+	}
+	err = registerEndpoints(queryEndpoints, createUnsignedPayload)
+	if err != nil {
+		return err
 	}
 	return nil
 }
