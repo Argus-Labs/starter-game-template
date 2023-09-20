@@ -54,7 +54,12 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 		Data []Data `json:"data"`
 	}
 	finalResults := []Item{}
+	currentTs := time.Now()
+	maxTime := 10 * time.Second
 
+	//hits the cql endpoint and eventually expects at least > 1 result
+	//Since the tests and http server move faster than the game loop, initial tests actually
+	//return 0 results so this loop will keep going until a timeout or the query gets one result.
 	for len(finalResults) <= 0 {
 		resp, err = c.rpc("query/game/cql", struct {
 			CQL string `json:CQL`
@@ -77,6 +82,9 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 					t.Fatal("Should not have anymore components")
 				}
 			}
+		}
+		if time.Now().Second()-currentTs.Second() > int(maxTime) {
+			assert.Assert(t, false)
 		}
 	}
 

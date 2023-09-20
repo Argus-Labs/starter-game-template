@@ -273,8 +273,6 @@ func handleShowPersona(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 // initCardinalEndpoints queries the cardinal server to find the list of existing endpoints, and attempts to
 // set up RPC wrappers around each one.
 func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initializer) error {
-	//endpoints, err := cardinalListAllEndpoints()
-
 	endpointStruct, err := cardinalGetEndpointsStruct()
 	if err != nil {
 		return err
