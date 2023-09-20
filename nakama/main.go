@@ -283,7 +283,7 @@ func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initialize
 	txEndpoints := endpointStruct.TxEndpoints
 	queryEndpoints := endpointStruct.QueryEndpoints
 
-	createPayloadSigned := func(payload string, endpoint string, nk runtime.NakamaModule, ctx context.Context) (io.Reader, error) {
+	createSignedPayload := func(payload string, endpoint string, nk runtime.NakamaModule, ctx context.Context) (io.Reader, error) {
 		logger.Debug("The %s endpoint requires a signed payload", endpoint)
 		signedPayload, err := makeSignedPayload(ctx, nk, payload)
 		if err != nil {
@@ -346,7 +346,7 @@ func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initialize
 		return nil
 	}
 
-	err = registerEndpoints(txEndpoints, createPayloadSigned)
+	err = registerEndpoints(txEndpoints, createSignedPayload)
 	if err != nil {
 		return err
 	}
