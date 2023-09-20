@@ -326,7 +326,7 @@ func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initialize
 				}
 				if resp.StatusCode != 200 {
 					body, _ := io.ReadAll(resp.Body)
-					return logError(logger, "bad status code: %w: %s", resp.Status, body)
+					return logError(logger, "bad status code: %s: %v", resp.Status, body)
 				}
 				bodyStr, err := io.ReadAll(resp.Body)
 				if err != nil {
