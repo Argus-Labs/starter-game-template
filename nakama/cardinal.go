@@ -54,22 +54,27 @@ type endpoints struct {
 	QueryEndpoints []string `json:"query_endpoints"`
 }
 
-func cardinalGetEndpointsStruct() (*endpoints, error) {
+func cardinalGetEndpointsStruct() (txEndpoints []string, queryEndpoints []string, err error) {
+	err = nil
+	var resp *http.Response
 	url := makeURL(listEndpoints)
-	resp, err := http.Post(url, "", nil)
+	resp, err = http.Post(url, "", nil)
 	if err != nil {
-		return nil, err
+		return
 	}
 	if resp.StatusCode != 200 {
 		buf, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("list endpoints (at %q) failed with status code %d: %v", url, resp.StatusCode, string(buf))
+		err = fmt.Errorf("list endpoints (at %q) failed with status code %d: %v", url, resp.StatusCode, string(buf))
+		return
 	}
 	dec := json.NewDecoder(resp.Body)
 	var endpointsStruct endpoints
-	if err := dec.Decode(&endpointsStruct); err != nil {
-		return nil, err
+	if err = dec.Decode(&endpointsStruct); err != nil {
+		return
 	}
-	return &endpointsStruct, nil
+	txEndpoints = endpointsStruct.TxEndpoints
+	queryEndpoints = endpointsStruct.QueryEndpoints
+	return
 }
 
 func doRequest(req *http.Request) (*http.Response, error) {

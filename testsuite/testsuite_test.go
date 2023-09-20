@@ -36,7 +36,9 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 	assert.Equal(t, 200, resp.StatusCode, copyBody(resp))
 
 	assert.NilError(t, waitForAcceptedPersonaTag(c))
-	type CreatePlayerTxMsg struct{ Nickname string }
+	type CreatePlayerTxMsg struct {
+		Nickname string `json:"nickname"`
+	}
 	payload := CreatePlayerTxMsg{"Bob"}
 	resp, err = c.rpc("tx/game/create-player", payload)
 	assert.NilError(t, err)
@@ -84,7 +86,7 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 			}
 		}
 		if time.Now().Second()-currentTs.Second() > int(maxTime) {
-			assert.Assert(t, false)
+			assert.Assert(t, false, "timeout occured here, CQL query should return some results eventually")
 		}
 	}
 

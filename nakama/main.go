@@ -273,13 +273,10 @@ func handleShowPersona(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 // initCardinalEndpoints queries the cardinal server to find the list of existing endpoints, and attempts to
 // set up RPC wrappers around each one.
 func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initializer) error {
-	endpointStruct, err := cardinalGetEndpointsStruct()
+	txEndpoints, queryEndpoints, err := cardinalGetEndpointsStruct()
 	if err != nil {
 		return err
 	}
-
-	txEndpoints := endpointStruct.TxEndpoints
-	queryEndpoints := endpointStruct.QueryEndpoints
 
 	createSignedPayload := func(payload string, endpoint string, nk runtime.NakamaModule, ctx context.Context) (io.Reader, error) {
 		logger.Debug("The %s endpoint requires a signed payload", endpoint)
@@ -315,27 +312,27 @@ func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initialize
 				var resultPayload io.Reader
 				resultPayload, err = createPayload(payload, currEndpoint, nk, ctx)
 				if err != nil {
-					return logError(logger, "unable to make payload: %v", err)
+					return logError(logger, "unable to make payload: %w", err)
 				}
 
 				req, err := http.NewRequestWithContext(ctx, "POST", makeURL(currEndpoint), resultPayload)
 				req.Header.Set("Content-Type", "application/json")
 				if err != nil {
-					return logError(logger, "request setup failed for endpoint %q: %v", currEndpoint, err)
+					return logError(logger, "request setup failed for endpoint %q: %w", currEndpoint, err)
 				}
 				resp, err := http.DefaultClient.Do(req)
 				if err != nil {
-					return logError(logger, "request failed for endpoint %q: %v", currEndpoint, err)
+					return logError(logger, "request failed for endpoint %q: %w", currEndpoint, err)
 				}
 				if resp.StatusCode != 200 {
 					body, _ := io.ReadAll(resp.Body)
-					return logError(logger, "bad status code: %v: %s", resp.Status, body)
+					return logError(logger, "bad status code: %w: %s", resp.Status, body)
 				}
-				str, err := io.ReadAll(resp.Body)
+				bodyStr, err := io.ReadAll(resp.Body)
 				if err != nil {
-					return logError(logger, "can't read body: %v", err)
+					return logError(logger, "can't read body: %w", err)
 				}
-				return string(str), nil
+				return string(bodyStr), nil
 			})
 			if err != nil {
 				return err
