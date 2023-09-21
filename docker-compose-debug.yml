@@ -48,7 +48,7 @@ services:
     security_opt:
       - "seccomp:unconfined"
   nakama:
-    platform: linux/amd4
+    platform: linux/amd64
     build: ./nakama
     depends_on:
       - postgres
