@@ -26,7 +26,8 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 	signerAddr := crypto.PubkeyToAddress(privateKey.PublicKey).Hex()
 	username, deviceID, personaTag := triple(randomString())
 	c := newClient(t)
-	assert.NilError(t, c.registerDevice(username, deviceID))
+	err = c.registerDevice(username, deviceID)
+	assert.NilError(t, err)
 
 	resp, err := c.rpc("nakama/claim-persona", map[string]any{
 		"persona_tag":    personaTag,

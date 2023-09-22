@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Delve into Docker",
+      "type": "go",
+      "request": "attach",
+      "mode": "remote",
+      "port": 40001,
+      "host": "127.0.0.1",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "substitutePath": [
+        {
+          "from": "${workspaceFolder}/nakama",
+          "to": "github.com/argus-labs/starter-game-template/cardinal"
+        }
+      ]
+    }
+  ]
+}

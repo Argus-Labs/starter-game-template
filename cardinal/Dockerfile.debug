@@ -14,4 +14,4 @@ FROM ubuntu:22.04
 COPY --from=build /go/bin/dlv /usr/local/bin
 COPY --from=build /usr/local/bin/app /usr/local/bin/
 
-CMD ["dlv", "--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "/usr/local/bin/app"]
+CMD ["dlv", "--log", "--log-output=debugger", "--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "/usr/local/bin/app"]
