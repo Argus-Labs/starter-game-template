@@ -6,19 +6,21 @@ import (
 	comp "github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs/entity"
 	"pkg.world.dev/world-engine/cardinal/ecs/filter"
-	"pkg.world.dev/world-engine/cardinal/ecs/storage"
+	"pkg.world.dev/world-engine/cardinal/ecs/log"
+	"pkg.world.dev/world-engine/cardinal/ecs/transaction"
 )
 
 // AttackSystem is a system that inflict damage to player's HP based on `AttackPlayer` transactions.
 // This provides a simple example of how to create a system that modifies the component of an entity.
-func AttackSystem(world *ecs.World, tq *ecs.TransactionQueue, _ *ecs.Logger) error {
+func AttackSystem(world *ecs.World, tq *transaction.TxQueue, _ *log.Logger) error {
 	// Get all the transactions that are of type CreatePlayer from the tx queue
 	attackTxs := tx.AttackPlayer.In(tq)
 
 	// Create an index of player tags to its health component
-	playerTagToID := map[string]storage.EntityID{}
-	ecs.NewQuery(filter.Exact(comp.Player, comp.Health)).Each(world, func(id storage.EntityID) bool {
+	playerTagToID := map[string]entity.ID{}
+	ecs.NewQuery(filter.Exact(comp.Player, comp.Health)).Each(world, func(id entity.ID) bool {
 		player, err := comp.Player.Get(world, id)
 		if err != nil {
 			return true

@@ -6,11 +6,13 @@ import (
 	comp "github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal/ecs/log"
+	"pkg.world.dev/world-engine/cardinal/ecs/transaction"
 )
 
 // PlayerSpawnerSystem is a system that spawns players based on `CreatePlayer` transactions.
 // This provides a simple example of how to create a system that creates a new entity.
-func PlayerSpawnerSystem(world *ecs.World, tq *ecs.TransactionQueue, _ *ecs.Logger) error {
+func PlayerSpawnerSystem(world *ecs.World, tq *transaction.TxQueue, _ *log.Logger) error {
 	// Get all the transactions that are of type CreatePlayer from the tx queue
 	createTxs := tx.CreatePlayer.In(tq)
 

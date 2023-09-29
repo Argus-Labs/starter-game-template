@@ -71,7 +71,7 @@ func main() {
 		log.Fatal().Err(err)
 	}
 
-	world.StartGameLoop(context.Background(), time.Second)
+	world.StartGameLoop(context.Background(), time.Tick(time.Second), nil)
 
 	// TODO: When launching to production, you should enable signature verification.
 	fmt.Println("Serving Cardinal at: ", cfg.CardinalPort)
