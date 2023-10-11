@@ -41,8 +41,10 @@ console.log("session is", session)
 let result = await client.listMatches(session)
 
 let dec = new TextDecoder()
-socket.onmatchdata = (result) => {
-    console.log("tx receipt: ", dec.decode(result.data));
+
+socket.onnotification = (notification) => {
+  console.log("Received %o", notification);
+  console.log("Notification content %o", notification.content);
 }
 
 let match_id = result.matches[0].match_id

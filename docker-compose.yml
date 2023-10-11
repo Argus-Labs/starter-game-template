@@ -41,7 +41,7 @@ services:
       - REDIS_MODE=normal
   nakama:
     platform: linux/amd64
-    build: ./nakama
+    build: ${PATH_TO_NAKAMA}
     depends_on:
       - postgres
       - cardinal

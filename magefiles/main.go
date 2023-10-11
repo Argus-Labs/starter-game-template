@@ -61,8 +61,26 @@ func Nakama() error {
 		return err
 	}
 	env := map[string]string{
-		"CARDINAL_ADDR": "http://host.docker.internal:3333",
+		"CARDINAL_ADDR":  "http://host.docker.internal:3333",
+		"PATH_TO_NAKAMA": "./nakama",
 	}
+	if err := sh.RunWithV(env, "docker", "compose", "up", "--build", "nakama"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// NakamaAt builds Nakama from the given path and starts Nakama and cardinal.
+func NakamaAt(path string) error {
+	mg.Deps(exitMagefilesDir)
+	if err := prepareDir(path); err != nil {
+		return err
+	}
+	env := map[string]string{
+		"CARDINAL_ADDR":  "http://host.docker.internal:3333",
+		"PATH_TO_NAKAMA": path,
+	}
+
 	if err := sh.RunWithV(env, "docker", "compose", "up", "--build", "nakama"); err != nil {
 		return err
 	}

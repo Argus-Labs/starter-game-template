@@ -37,6 +37,11 @@ To start Nakama and Cardinal:
 mage start
 ```
 
+To start Nakama from a specific directory (e.g. world-engine/relay/nakama) as well as the Cardinal instance in this directory:
+```bash
+mage nakamaAt <path/to/nakama/dir>
+```
+
 To start ONLY Cardinal in dev mode (compatible with the Retool dashboard):
 
 ```bash

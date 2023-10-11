@@ -4,9 +4,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/magefile/mage/sh"
 	"os"
 	"path/filepath"
+
+	"github.com/magefile/mage/sh"
 )
 
 func prepareDirs(dirs ...string) error {
@@ -19,6 +20,10 @@ func prepareDirs(dirs ...string) error {
 }
 
 func prepareDir(dir string) error {
+	originDir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
 	if err := os.Chdir(dir); err != nil {
 		return err
 	}
@@ -31,7 +36,7 @@ func prepareDir(dir string) error {
 	if err := sh.Run("go", "mod", "vendor"); err != nil {
 		return err
 	}
-	if err := os.Chdir(".."); err != nil {
+	if err := os.Chdir(originDir); err != nil {
 		return err
 	}
 	return nil
