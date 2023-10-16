@@ -10,6 +10,10 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
+var (
+	environment = map[string]string{}
+)
+
 // Check verifies that various prerequisites are installed or configured on your machine
 func Check() error {
 	return checkPrereq(true)
@@ -17,7 +21,7 @@ func Check() error {
 
 // Clear deletes all the docker volumes
 func Clear() error {
-	if err := sh.RunV("docker", "compose", "down", "--volumes"); err != nil {
+	if err := sh.RunWithV(environment, "docker", "compose", "down", "--volumes"); err != nil {
 		return err
 	}
 	return nil
@@ -25,13 +29,14 @@ func Clear() error {
 
 // Test runs the test suite
 func Test() error {
+	environment["PATH_TO_NAKAMA"] = "./nakama"
 	mg.Deps(exitMagefilesDir)
 	mg.Deps(Clear)
 
 	if err := prepareDirs("testsuite", "cardinal", "nakama"); err != nil {
 		return err
 	}
-	if err := sh.RunV("docker", "compose", "up", "--build", "--abort-on-container-exit", "--exit-code-from", "testsuite", "--attach", "testsuite"); err != nil {
+	if err := sh.RunWithV(environment, "docker", "compose", "up", "--build", "--abort-on-container-exit", "--exit-code-from", "testsuite", "--attach", "testsuite"); err != nil {
 		return err
 	}
 	return nil
