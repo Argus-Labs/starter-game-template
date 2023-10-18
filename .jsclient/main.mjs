@@ -37,8 +37,19 @@ var appearOnline = true
 session = await socket.connect(session, appearOnline);
 
 console.log("session is", session)
+
+let result = await client.listMatches(session)
+
+let dec = new TextDecoder()
+socket.onmatchdata = (result) => {
+    console.log("tx receipt: ", dec.decode(result.data));
+}
+
 socket.onnotification = (notification) => {
   console.log("Received %o", notification);
   console.log("Notification content %o", notification.content);
 }
 
+let match_id = result.matches[0].match_id
+let match = await socket.joinMatch(match_id)
+console.log("i joined the match: ", match)
