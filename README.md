@@ -106,7 +106,7 @@ A persona tag is essentially a cardinal based user. To create a persona tag in y
 endpoint from the dropdown. Make sure to paste in a valid User ID into the User ID field. Set the request body to:
 ```json
 {
-  "persona_tag": "some-persona-tag"
+  "personaTag": "some-persona-tag"
 }
 ```
 
@@ -114,10 +114,10 @@ and hit Submit. You should see a response like:
 
 ```json
 {
-  "persona_tag": "some-persona-tag",
+  "personaTag": "some-persona-tag",
   "status": "pending",
   "tick": 2567,
-  "tx_hash": "0x6bc26694dee4c4163335e4fe01d73eab2da071f38b991ae8424fa52de330c228"
+  "hash": "0x6bc26694dee4c4163335e4fe01d73eab2da071f38b991ae8424fa52de330c228"
 }
 ```
 
@@ -137,7 +137,6 @@ package main
 
 import (
 	"pkg.world.dev/world-engine/cardinal/ecs"
-	"pkg.world.dev/world-engine/cardinal/ecs/inmem"
 )
 
 type MoveMsg struct {
@@ -169,7 +168,7 @@ depends on what Systems you've defined.
 
 ## Storage
 
-The `Storage` item in the sidebar allows you to view Nakama user data. Storage objects with a key name of `persona_tag`
+The `Storage` item in the sidebar allows you to view Nakama user data. Storage objects with a key name of `personaTag`
 describe which persona tag has been associated with user ID.
 
 # Cardinal Editor

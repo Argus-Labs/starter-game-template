@@ -1,7 +1,7 @@
 package tx
 
 import (
-	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type AttackPlayerMsg struct {
@@ -10,4 +10,4 @@ type AttackPlayerMsg struct {
 
 type AttackPlayerMsgReply struct{}
 
-var AttackPlayer = ecs.NewTransactionType[AttackPlayerMsg, AttackPlayerMsgReply]("attack-player")
+var AttackPlayer = cardinal.NewTransactionType[AttackPlayerMsg, AttackPlayerMsgReply]("attack-player")

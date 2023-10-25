@@ -33,7 +33,7 @@ var (
 )
 
 type txResponse struct {
-	TxHash string `json:"tx_hash"`
+	TxHash string `json:"txHash"`
 	Tick   uint64 `json:"tick"`
 }
 
@@ -50,8 +50,8 @@ func makeURL(resource string) string {
 }
 
 type endpoints struct {
-	TxEndpoints    []string `json:"tx_endpoints"`
-	QueryEndpoints []string `json:"query_endpoints"`
+	TxEndpoints    []string `json:"txEndpoints"`
+	QueryEndpoints []string `json:"queryEndpoints"`
 }
 
 func cardinalGetEndpointsStruct() (txEndpoints []string, queryEndpoints []string, err error) {
@@ -91,8 +91,8 @@ func doRequest(req *http.Request) (*http.Response, error) {
 func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, personaTag string) (txHash string, tick uint64, err error) {
 	signerAddress := getSignerAddress()
 	createPersonaTx := struct {
-		PersonaTag    string
-		SignerAddress string
+		PersonaTag    string `json:"personaTag"`
+		SignerAddress string `json:"signerAddress"`
 	}{
 		PersonaTag:    personaTag,
 		SignerAddress: signerAddress,
@@ -141,8 +141,8 @@ func cardinalCreatePersona(ctx context.Context, nk runtime.NakamaModule, persona
 
 func cardinalQueryPersonaSigner(ctx context.Context, personaTag string, tick uint64) (signerAddress string, err error) {
 	readPersonaRequest := struct {
-		PersonaTag string
-		Tick       uint64
+		PersonaTag string `json:"personaTag"`
+		Tick       uint64 `json:"tick"`
 	}{
 		PersonaTag: personaTag,
 		Tick:       tick,
@@ -163,8 +163,8 @@ func cardinalQueryPersonaSigner(ctx context.Context, personaTag string, tick uin
 	}
 
 	var resp struct {
-		Status        string
-		SignerAddress string
+		Status        string `json:"status"`
+		SignerAddress string `json:"signerAddress"`
 	}
 	if err := json.NewDecoder(httpResp.Body).Decode(&resp); err != nil {
 		return "", err
