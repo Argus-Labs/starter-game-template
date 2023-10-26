@@ -15,7 +15,7 @@ type personaTagStorageObj struct {
 	PersonaTag string           `json:"personaTag"`
 	Status     personaTagStatus `json:"status"`
 	Tick       uint64           `json:"tick"`
-	TxHash     string           `json:"hash"`
+	TxHash     string           `json:"txHash"`
 	// version is used with Nakama storage layer to allow for optimistic locking. Saving this storage
 	// object succeeds only if the passed in version matches the version in the storage layer.
 	// see https://heroiclabs.com/docs/nakama/concepts/storage/collections/#conditional-writes for more info.

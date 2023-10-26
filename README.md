@@ -117,7 +117,7 @@ and hit Submit. You should see a response like:
   "personaTag": "some-persona-tag",
   "status": "pending",
   "tick": 2567,
-  "hash": "0x6bc26694dee4c4163335e4fe01d73eab2da071f38b991ae8424fa52de330c228"
+  "txHash": "0x6bc26694dee4c4163335e4fe01d73eab2da071f38b991ae8424fa52de330c228"
 }
 ```
 
