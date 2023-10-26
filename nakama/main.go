@@ -44,7 +44,7 @@ const (
 	EnvCardinalNamespace = "CARDINAL_NAMESPACE"
 
 	cardinalCollection = "cardinal_collection"
-	personaTagKey      = "persona_tag"
+	personaTagKey      = "personaTag"
 )
 
 var (
@@ -208,7 +208,7 @@ func handleClaimPersona(ptv *personaTagVerifier) nakamaRPCHandler {
 			return logError(logger, "unable to marshal payload: %w", err)
 		}
 		if ptr.PersonaTag == "" {
-			return logCode(logger, INVALID_ARGUMENT, "persona_tag field must not be empty")
+			return logCode(logger, INVALID_ARGUMENT, "personaTag field must not be empty")
 		}
 
 		ptr.Status = personaTagStatusPending

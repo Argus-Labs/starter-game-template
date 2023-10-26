@@ -1,9 +1,8 @@
 package main
 
 import (
-	"context"
+	"errors"
 	"fmt"
-	"time"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/read"
@@ -11,7 +10,7 @@ import (
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"pkg.world.dev/world-engine/cardinal/server"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 func main() {
@@ -22,15 +21,16 @@ func main() {
 	// TODO: In production, you should set DEPLOY_MODE=production
 	// and set REDIS_ADDR and REDIS_PASSWORD to use a real Redis instance.
 	// Otherwise, by default cardinal will run using an in-memory redis.
-	world := NewWorld(cfg)
+	// TODO: When launching to production, you should enable signature verification.
+	fmt.Println("Serving Cardinal at: ", cfg.CardinalPort)
+	world := NewWorld(cfg, cardinal.WithDisableSignatureVerification())
 
 	// Register components
 	// NOTE: You must register your components here,
 	// otherwise it will show an error when you try to use them in a system.
-	err := world.RegisterComponents(
-		component.Player,
-		component.Health,
-	)
+	err := errors.Join(
+		cardinal.RegisterComponent[component.PlayerComponent](world),
+		cardinal.RegisterComponent[component.HealthComponent](world))
 	if err != nil {
 		log.Fatal().Err(err)
 	}
@@ -38,7 +38,7 @@ func main() {
 	// Register transactions
 	// NOTE: You must register your transactions here,
 	// otherwise it will show an error when you try to use them in a system.
-	err = world.RegisterTransactions(
+	err = cardinal.RegisterTransactions(world,
 		tx.CreatePlayer,
 		tx.AttackPlayer,
 	)
@@ -49,7 +49,7 @@ func main() {
 	// Register read endpoints
 	// NOTE: You must register your read endpoints here,
 	// otherwise it will not be accessible.
-	err = world.RegisterReads(
+	err = cardinal.RegisterQueries(world,
 		read.Archetype,
 		read.Constant,
 	)
@@ -61,28 +61,15 @@ func main() {
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
 	// For example, you may want to run the attack system before the regen system
 	// so that the player's HP is subtracted (and player killed if it reaches 0) before HP is regenerated.
-	world.AddSystem(system.AttackSystem)
-	world.AddSystem(system.RegenSystem)
-	world.AddSystem(system.PlayerSpawnerSystem)
 
-	// Load game state
-	err = world.LoadGameState()
-	if err != nil {
-		log.Fatal().Err(err)
-	}
+	cardinal.RegisterSystems(world,
+		system.AttackSystem,
+		system.RegenSystem,
+		system.PlayerSpawnerSystem)
 
-	world.StartGameLoop(context.Background(), time.Tick(time.Second), nil)
-
-	// TODO: When launching to production, you should enable signature verification.
-	fmt.Println("Serving Cardinal at: ", cfg.CardinalPort)
-	h, err := server.NewHandler(world, server.WithPort(cfg.CardinalPort), server.DisableSignatureVerification())
+	err = world.StartGame()
 	if err != nil {
 		panic(err)
-	}
-	err = h.Serve()
-	if err != nil {
-		log.Fatal().Err(err)
-		return
 	}
 
 }

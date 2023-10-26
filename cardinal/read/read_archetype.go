@@ -3,12 +3,10 @@ package read
 import (
 	"errors"
 	"fmt"
-	"reflect"
 
+	"github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/game"
-	"pkg.world.dev/world-engine/cardinal/ecs"
-	"pkg.world.dev/world-engine/cardinal/ecs/entity"
-	"pkg.world.dev/world-engine/cardinal/ecs/filter"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type ArchetypeRequest struct {
@@ -20,9 +18,9 @@ type ArchetypeResponse struct {
 	Value interface{} `json:"value"`
 }
 
-var Archetype = ecs.NewReadType[ArchetypeRequest, ArchetypeResponse]("archetype", queryArchetype)
+var Archetype = cardinal.NewQueryType[ArchetypeRequest, ArchetypeResponse]("archetype", queryArchetype)
 
-func queryArchetype(world *ecs.World, req ArchetypeRequest) (ArchetypeResponse, error) {
+func queryArchetype(wCtx cardinal.WorldContext, req ArchetypeRequest) (ArchetypeResponse, error) {
 	var entities []interface{}
 	var errs []error
 
@@ -41,29 +39,32 @@ func queryArchetype(world *ecs.World, req ArchetypeRequest) (ArchetypeResponse, 
 	}
 
 	// Query for the archetype
-	query := ecs.NewQuery(filter.Exact(archetype.Components...))
-	query.Each(world, func(id entity.ID) bool {
+	query, err := wCtx.NewSearch(cardinal.Exact(archetype.Components...))
+	if err != nil {
+		return ArchetypeResponse{}, err
+	}
+	err = query.Each(wCtx, func(id cardinal.EntityID) bool {
 		entity := make(map[string]interface{})
 		entity["id"] = id
 
 		// Get all the component values
-		for _, component := range archetype.Components {
-			// Call the component's Get method. This returns the component's value and an error
-			in := []reflect.Value{reflect.ValueOf(world), reflect.ValueOf(id)}
-			componentGetResult := reflect.ValueOf(component).MethodByName("Get").Call(in)
-
-			value, err := componentGetResult[0].Interface(), componentGetResult[1].Interface()
-			if err != nil {
-				errs = append(errs, fmt.Errorf("failed to get component %s", component.Name()))
-				return true
-			}
-
-			entity[component.Name()] = value
+		healthComponent, err := cardinal.GetComponent[component.HealthComponent](wCtx, id)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("failed to get component %s", component.HealthComponent{}.Name()))
+			return true
 		}
-
-		entities = append(entities, entity)
+		entity[healthComponent.Name()] = healthComponent
+		playerComponent, err := cardinal.GetComponent[component.PlayerComponent](wCtx, id)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("failed to get component %s", component.HealthComponent{}.Name()))
+			return true
+		}
+		entity[playerComponent.Name()] = playerComponent
 		return true
 	})
+	if err != nil {
+		return ArchetypeResponse{}, err
+	}
 
 	// Handle errors
 	if len(errs) > 0 {

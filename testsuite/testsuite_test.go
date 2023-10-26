@@ -29,8 +29,8 @@ func TestTransactionAndCQLAndRead(t *testing.T) {
 	assert.NilError(t, c.registerDevice(username, deviceID))
 
 	resp, err := c.rpc("nakama/claim-persona", map[string]any{
-		"persona_tag":    personaTag,
-		"signer_address": signerAddr,
+		"personaTag":    personaTag,
+		"signerAddress": signerAddr,
 	})
 	assert.NilError(t, err, "claim-persona failed")
 	assert.Equal(t, 200, resp.StatusCode, copyBody(resp))
@@ -115,7 +115,7 @@ func TestCanShowPersona(t *testing.T) {
 	assert.NilError(t, c.registerDevice(username, deviceID))
 
 	resp, err := c.rpc("nakama/claim-persona", map[string]any{
-		"persona_tag": personaTag,
+		"personaTag": personaTag,
 	})
 	assert.NilError(t, err, "claim-persona failed")
 	assert.Equal(t, 200, resp.StatusCode, copyBody(resp))
@@ -130,7 +130,7 @@ func TestDifferentUsersCannotClaimSamePersonaTag(t *testing.T) {
 	assert.NilError(t, aClient.registerDevice(userA, deviceA))
 
 	resp, err := aClient.rpc("nakama/claim-persona", map[string]any{
-		"persona_tag": ptA,
+		"personaTag": ptA,
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, copyBody(resp))
@@ -141,7 +141,7 @@ func TestDifferentUsersCannotClaimSamePersonaTag(t *testing.T) {
 	bClient := newClient(t)
 	assert.NilError(t, bClient.registerDevice(userB, deviceB))
 	resp, err = bClient.rpc("nakama/claim-persona", map[string]any{
-		"persona_tag": ptB,
+		"personaTag": ptB,
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 409, resp.StatusCode, copyBody(resp))
@@ -175,7 +175,7 @@ func TestConcurrentlyClaimSamePersonaTag(t *testing.T) {
 		c := client
 		go func() {
 			resp, err := c.rpc("nakama/claim-persona", map[string]any{
-				"persona_tag": personaTag,
+				"personaTag": personaTag,
 			})
 			ch <- result{resp, err}
 		}()
@@ -198,14 +198,14 @@ func TestCannotClaimAdditionalPersonATag(t *testing.T) {
 	assert.NilError(t, c.registerDevice(user, device))
 
 	resp, err := c.rpc("nakama/claim-persona", map[string]any{
-		"persona_tag": tag,
+		"personaTag": tag,
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, 200, resp.StatusCode, copyBody(resp))
 
 	// Trying to request a different persona tag right away should fail.
 	resp, err = c.rpc("nakama/claim-persona", map[string]any{
-		"persona_tag": "some-other-persona-tag",
+		"personaTag": "some-other-persona-tag",
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 409, resp.StatusCode, copyBody(resp))
@@ -214,7 +214,7 @@ func TestCannotClaimAdditionalPersonATag(t *testing.T) {
 	// Trying to request a different persona tag after the original has been accepted
 	// should fail
 	resp, err = c.rpc("nakama/claim-persona", map[string]any{
-		"persona_tag": "some-other-persona-tag",
+		"personaTag": "some-other-persona-tag",
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 409, resp.StatusCode)

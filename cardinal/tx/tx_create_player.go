@@ -1,7 +1,7 @@
 package tx
 
 import (
-	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type CreatePlayerMsg struct {
@@ -12,4 +12,4 @@ type CreatePlayerMsgReply struct {
 	Success bool `json:"success"`
 }
 
-var CreatePlayer = ecs.NewTransactionType[CreatePlayerMsg, CreatePlayerMsgReply]("create-player")
+var CreatePlayer = cardinal.NewTransactionType[CreatePlayerMsg, CreatePlayerMsgReply]("create-player")
