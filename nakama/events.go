@@ -83,11 +83,7 @@ func (eh *EventHub) dispatch(log runtime.Logger) error {
 				err = errors.New("not a channel")
 				return false
 			}
-			select {
-			case channel <- &Event{message: string(message)}: //will not block
-				//default:
-				//	log.Info("failed to deliver a event to session %q", key)
-			}
+			channel <- &Event{message: string(message)}
 			return true
 		})
 		if err != nil {
