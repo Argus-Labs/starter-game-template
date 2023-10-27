@@ -61,7 +61,7 @@ func Nakama() error {
 		return err
 	}
 	env := map[string]string{
-		"CARDINAL_ADDR": "http://host.docker.internal:3333",
+		"CARDINAL_ADDR": "host.docker.internal:3333",
 	}
 	if err := sh.RunWithV(env, "docker", "compose", "up", "--build", "nakama"); err != nil {
 		return err

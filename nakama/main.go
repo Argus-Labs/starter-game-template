@@ -56,6 +56,7 @@ var (
 	globalPersonaTagAssignment = sync.Map{}
 
 	globalReceiptsDispatcher *receiptsDispatcher
+	globalEventHub           *EventHub
 )
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
@@ -70,6 +71,10 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 
 	if err := initReceiptDispatcher(logger); err != nil {
 		return fmt.Errorf("failed to init receipt dispatcher: %w", err)
+	}
+
+	if err := initEventHub(ctx, logger, nk); err != nil {
+		return fmt.Errorf("failed to init event hub: %w", err)
 	}
 
 	if err := initReceiptMatch(ctx, logger, db, nk, initializer); err != nil {
@@ -112,6 +117,36 @@ func initReceiptDispatcher(log runtime.Logger) error {
 	globalReceiptsDispatcher = newReceiptsDispatcher()
 	go globalReceiptsDispatcher.pollReceipts(log)
 	go globalReceiptsDispatcher.dispatch(log)
+	return nil
+}
+
+func initEventHub(ctx context.Context, log runtime.Logger, nk runtime.NakamaModule) error {
+	globalEventHub, err := createEventHub()
+	if err != nil {
+		return err
+	}
+	go func() {
+		_ = globalEventHub.dispatch(log)
+		if err != nil {
+			log.Error("error initializing eventHub: %s", err.Error())
+		}
+	}()
+
+	//for now send to everybody via notifications.
+	go func() {
+		channel := globalEventHub.subscribe("main")
+		for !globalEventHub.didShutdown.Load() {
+			select {
+			case event := <-channel:
+				err := nk.NotificationSendAll(ctx, "event", map[string]interface{}{"message": event.message}, 1, true)
+				if err != nil {
+					log.Error("error sending notifications: %s", err.Error())
+					panic(err)
+				}
+			}
+		}
+	}()
+
 	return nil
 }
 
@@ -315,7 +350,7 @@ func initCardinalEndpoints(logger runtime.Logger, initializer runtime.Initialize
 					return logError(logger, "unable to make payload: %w", err)
 				}
 
-				req, err := http.NewRequestWithContext(ctx, "POST", makeURL(currEndpoint), resultPayload)
+				req, err := http.NewRequestWithContext(ctx, "POST", makeHTTPURL(currEndpoint), resultPayload)
 				req.Header.Set("Content-Type", "application/json")
 				if err != nil {
 					return logError(logger, "request setup failed for endpoint %q: %w", currEndpoint, err)
