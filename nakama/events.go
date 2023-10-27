@@ -66,7 +66,7 @@ func (eh *EventHub) shutdown() {
 }
 
 // dispatch continually drains eh.inputConnection (events from cardinal) and sends copies to all subscribed channels.
-// This function is meant to be called in a goroutine. Pushed receipts will not block when sending.
+// This function is meant to be called in a goroutine.
 func (eh *EventHub) dispatch(log runtime.Logger) error {
 	var err error
 	for !eh.didShutdown.Load() {
