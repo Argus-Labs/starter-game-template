@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
@@ -141,10 +142,12 @@ func initEventHub(ctx context.Context, log runtime.Logger, nk runtime.NakamaModu
 				err := nk.NotificationSendAll(ctx, "event", map[string]interface{}{"message": event.message}, 1, true)
 				if err != nil {
 					log.Error("error sending notifications: %s", err.Error())
-					panic(err)
 				}
+			case <-time.After(2 * time.Second):
+				continue //check for shutdown every 2 seconds. A blocking channel will not stop it.
 			}
 		}
+
 	}()
 
 	return nil
