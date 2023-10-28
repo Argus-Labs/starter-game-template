@@ -22,14 +22,14 @@ type EventHub struct {
 	didShutdown     atomic.Bool
 }
 
-func createEventHub() (*EventHub, error) {
+func createEventHub(logger runtime.Logger) (*EventHub, error) {
 	url := makeWebSocketURL(eventEndpoint)
 	webSocketConnection, _, err := websocket.DefaultDialer.Dial(url, nil)
 	for err != nil {
 		if errors.Is(err, &net.DNSError{}) {
 			//sleep a little try again...
-			fmt.Println("No host found.")
-			fmt.Println(err.Error())
+			logger.Info("No host found.")
+			logger.Info(err.Error())
 			time.Sleep(2 * time.Second)
 			webSocketConnection, _, err = websocket.DefaultDialer.Dial(url, nil)
 		} else {

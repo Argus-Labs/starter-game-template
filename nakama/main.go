@@ -120,7 +120,7 @@ func initReceiptDispatcher(log runtime.Logger) error {
 }
 
 func initEventHub(ctx context.Context, log runtime.Logger, nk runtime.NakamaModule) error {
-	eventHub, err := createEventHub()
+	eventHub, err := createEventHub(log)
 	if err != nil {
 		return err
 	}
