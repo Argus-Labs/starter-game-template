@@ -16,11 +16,6 @@ type Event struct {
 	message string
 }
 
-type connectionChannelPairs struct {
-	connection *websocket.Conn
-	channel    chan *Event
-}
-
 type EventHub struct {
 	inputConnection *websocket.Conn
 	channels        *sync.Map //map[string]chan *Event
@@ -58,6 +53,15 @@ func (eh *EventHub) subscribe(session string) chan *Event {
 }
 
 func (eh *EventHub) unsubscribe(session string) {
+	eventChannelUntyped, ok := eh.channels.Load(session)
+	if !ok {
+		panic(errors.New("session not found"))
+	}
+	eventChannel, ok := eventChannelUntyped.(chan *Event)
+	if !ok {
+		panic(errors.New("found object that was not a event channel in event hub"))
+	}
+	close(eventChannel)
 	eh.channels.Delete(session)
 }
 
