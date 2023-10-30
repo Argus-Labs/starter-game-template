@@ -28,7 +28,7 @@ func Test() error {
 	mg.Deps(exitMagefilesDir)
 	mg.Deps(Clear)
 
-	if err := prepareDirs("testsuite", "cardinal", "nakama"); err != nil {
+	if err := prepareDirs("testsuite", "cardinal"); err != nil {
 		return err
 	}
 	if err := sh.RunV("docker", "compose", "up", "--build", "--abort-on-container-exit", "--exit-code-from", "testsuite", "--attach", "testsuite"); err != nil {

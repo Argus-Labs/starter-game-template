@@ -39,7 +39,7 @@ services:
       - REDIS_ADDR=redis:6379
       - REDIS_MODE=normal
   nakama:
-    image: us-docker.pkg.dev/argus-labs/starter-game-template/nakama:${STARTER_VERSION:-latest}
+    image: us-docker.pkg.dev/argus-labs/world-engine/relay/nakama@sha256:60737f1de75b5e1dfe0f1eb557ebf6f8c691cc2812950dc4e3132242709ddc09
     restart: unless-stopped
     depends_on:
       - postgres
