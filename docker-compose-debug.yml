@@ -49,7 +49,7 @@ services:
       - "seccomp:unconfined"
   nakama:
     platform: linux/amd64
-    build: ./nakama
+    image: us-docker.pkg.dev/argus-labs/world-engine/relay/nakama@sha256:60737f1de75b5e1dfe0f1eb557ebf6f8c691cc2812950dc4e3132242709ddc09
     depends_on:
       - postgres
       - cardinal
