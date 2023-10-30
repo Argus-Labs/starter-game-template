@@ -50,7 +50,6 @@ func main() {
 	// NOTE: You must register your read endpoints here,
 	// otherwise it will not be accessible.
 	err = cardinal.RegisterQueries(world,
-		read.Archetype,
 		read.Constant,
 	)
 	if err != nil {
