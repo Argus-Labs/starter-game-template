@@ -1,4 +1,4 @@
-package read
+package query
 
 import (
 	"errors"

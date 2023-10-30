@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/argus-labs/starter-game-template/cardinal/query"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
-	"github.com/argus-labs/starter-game-template/cardinal/read"
 	"github.com/argus-labs/starter-game-template/cardinal/system"
 	"github.com/argus-labs/starter-game-template/cardinal/tx"
 	"github.com/rs/zerolog"
@@ -50,8 +50,7 @@ func main() {
 	// NOTE: You must register your read endpoints here,
 	// otherwise it will not be accessible.
 	err = cardinal.RegisterQueries(world,
-		read.Archetype,
-		read.Constant,
+		query.Constant,
 	)
 	if err != nil {
 		log.Fatal().Err(err)
