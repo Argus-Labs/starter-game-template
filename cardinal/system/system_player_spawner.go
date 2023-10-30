@@ -18,14 +18,13 @@ func PlayerSpawnerSystem(wCtx cardinal.WorldContext) error {
 	// DEV: it's important here that you don't break out of the loop or return an error here
 	// or otherwise the rest of the transaction will not be processed & get dropped.
 	// In the future, you will be able to add error receipts to transaction receipts.
-	for _, create := range createTxs {
+	for i, create := range createTxs {
 		id, err := cardinal.Create(wCtx, comp.PlayerComponent{}, comp.HealthComponent{})
 		if err != nil {
 			tx.CreatePlayer.AddError(wCtx, create.Hash(),
 				fmt.Errorf("error creating player: %w", err))
 			continue
 		}
-
 		err = cardinal.SetComponent[comp.PlayerComponent](wCtx, id, &comp.PlayerComponent{Nickname: create.Value().Nickname})
 		if err != nil {
 			tx.CreatePlayer.AddError(wCtx, create.Hash(),
@@ -40,6 +39,7 @@ func PlayerSpawnerSystem(wCtx cardinal.WorldContext) error {
 			continue
 		}
 		tx.CreatePlayer.SetResult(wCtx, create.Hash(), tx.CreatePlayerMsgReply{true})
+		wCtx.EmitEvent(fmt.Sprintf("%d player: %d created, %d/%d", i+1, id, i+1, len(createTxs)))
 	}
 
 	return nil
