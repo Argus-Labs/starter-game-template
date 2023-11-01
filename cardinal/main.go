@@ -3,6 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/argus-labs/starter-game-template/cardinal/query"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
@@ -15,6 +17,7 @@ import (
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	cfg := GetConfig()
 
