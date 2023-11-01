@@ -72,7 +72,7 @@ func Nakama() error {
 // Start starts Nakama and cardinal
 func Start() error {
 	mg.Deps(exitMagefilesDir)
-	if err := prepareDirs("cardinal", "nakama"); err != nil {
+	if err := prepareDirs("cardinal"); err != nil {
 		return err
 	}
 	if err := sh.RunV("docker", "compose", "up", "--build", "cardinal", "nakama"); err != nil {
