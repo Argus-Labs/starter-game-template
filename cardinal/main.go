@@ -2,7 +2,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"os"
+
 	"github.com/argus-labs/starter-game-template/cardinal/query"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
@@ -15,6 +16,7 @@ import (
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	cfg := GetConfig()
 
@@ -22,7 +24,6 @@ func main() {
 	// and set REDIS_ADDR and REDIS_PASSWORD to use a real Redis instance.
 	// Otherwise, by default cardinal will run using an in-memory redis.
 	// TODO: When launching to production, you should enable signature verification.
-	fmt.Println("Serving Cardinal at: ", cfg.CardinalPort)
 	world := NewWorld(cfg, cardinal.WithDisableSignatureVerification())
 
 	// Register components

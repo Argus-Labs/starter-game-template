@@ -7,14 +7,9 @@ import (
 
 // NewWorld is the recommended way to run the game
 func NewWorld(addr string, password string, deployMode string, options ...cardinal.WorldOption) *cardinal.World {
-	log.Log().Msg("Running in normal mode, using external Redis")
 	if addr == "" {
-		log.Log().Msg("Redis address is not set, using fallback - localhost:6379")
+		log.Info().Msg("Redis address is not set, using fallback - localhost:6379")
 		addr = "localhost:6379"
-	}
-	if password == "" {
-		log.Log().Msg("Redis password is not set, make sure to set up redis with password in prod")
-		password = ""
 	}
 	if deployMode == "development" {
 		options = append(options, cardinal.WithPrettyLog())
@@ -34,7 +29,7 @@ func NewWorld(addr string, password string, deployMode string, options ...cardin
 // It runs a Redis server as a part of the Go process.
 // NOTE: worlds with embedded redis are incompatible with Cardinal Editor.
 func NewEmbeddedWorld(deployMode string) *cardinal.World {
-	log.Log().Msg("Running in embedded mode, using embedded miniredis")
+	log.Info().Msg("Running in embedded mode, using embedded miniredis")
 	options := make([]cardinal.WorldOption, 0)
 	if deployMode == "development" {
 		options = append(options, cardinal.WithPrettyLog())
