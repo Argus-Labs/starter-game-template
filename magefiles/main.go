@@ -57,13 +57,10 @@ func Restart() error {
 // Nakama starts just the Nakama server. The game server needs to be started some other way.
 func Nakama() error {
 	mg.Deps(exitMagefilesDir)
-	if err := prepareDir("nakama"); err != nil {
-		return err
-	}
 	env := map[string]string{
 		"CARDINAL_ADDR": "host.docker.internal:3333",
 	}
-	if err := sh.RunWithV(env, "docker", "compose", "up", "--build", "nakama"); err != nil {
+	if err := sh.RunWithV(env, "docker", "compose", "up", "nakama"); err != nil {
 		return err
 	}
 	return nil
@@ -72,7 +69,7 @@ func Nakama() error {
 // Start starts Nakama and cardinal
 func Start() error {
 	mg.Deps(exitMagefilesDir)
-	if err := prepareDirs("cardinal", "nakama"); err != nil {
+	if err := prepareDirs("cardinal"); err != nil {
 		return err
 	}
 	if err := sh.RunV("docker", "compose", "up", "--build", "cardinal", "nakama"); err != nil {
@@ -85,7 +82,7 @@ func Start() error {
 // Note Cardinal server will not run until a debugger is attached port 40000
 func StartDebug() error {
 	mg.Deps(exitMagefilesDir)
-	if err := prepareDirs("cardinal", "nakama"); err != nil {
+	if err := prepareDirs("cardinal"); err != nil {
 		return err
 	}
 	if err := sh.RunV("docker", "compose", "-f", "docker-compose-debug.yml", "up", "--build", "cardinal", "nakama"); err != nil {
@@ -100,9 +97,6 @@ func StartDetach() error {
 	if err := prepareDir("cardinal"); err != nil {
 		return err
 	}
-	if err := prepareDir("nakama"); err != nil {
-		return err
-	}
 	if err := sh.RunV("docker", "compose", "up", "--detach", "--wait", "--wait-timeout", "60"); err != nil {
 		return err
 	}
@@ -113,9 +107,6 @@ func StartDetach() error {
 func Build() error {
 	mg.Deps(exitMagefilesDir)
 	if err := prepareDir("cardinal"); err != nil {
-		return err
-	}
-	if err := prepareDir("nakama"); err != nil {
 		return err
 	}
 	if err := sh.RunV("docker", "compose", "build"); err != nil {
