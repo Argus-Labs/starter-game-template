@@ -38,7 +38,7 @@ func PlayerSpawnerSystem(wCtx cardinal.WorldContext) error {
 				fmt.Errorf("error setting player health: %w", err))
 			continue
 		}
-		tx.CreatePlayer.SetResult(wCtx, create.Hash(), tx.CreatePlayerMsgReply{true})
+		tx.CreatePlayer.SetResult(wCtx, create.Hash(), tx.CreatePlayerMsgReply{Success: true})
 		wCtx.EmitEvent(fmt.Sprintf("%d player: %d created, %d/%d", i+1, id, i+1, len(createTxs)))
 	}
 
