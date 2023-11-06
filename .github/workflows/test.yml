@@ -1,0 +1,23 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  testsuite:
+    name: Running Testsuite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Run Docker Compose Testsuite
+        run: docker compose up --abort-on-container-exit --exit-code-from testsuite --attach testsuite
+      - name: Testsuite logs status
+        if: success() || failure()
+        run: |
+          docker compose logs
