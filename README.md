@@ -5,60 +5,22 @@ transaction relayer.
 
 # Prerequisites
 
-## Mage Check
-
-A mage target exists that will check for some common pre-requisites. Run the check with:
-
-```bash
-mage check
-```
-
 ## Docker Compose
 
 Docker and docker compose are required for running Nakama and both can be installed with Docker Desktop.
 
 [Installation instructions for Docker Desktop](https://docs.docker.com/compose/install/#scenario-one-install-docker-desktop)
 
-## Mage
-
-[Mage](https://magefile.org/) is a cross-platform Make-like build tool.
-
-```bash
-git clone https://github.com/magefile/mage
-cd mage
-go run bootstrap.go
-```
 
 # Running the Server
 
 To start Nakama and Cardinal:
 
 ```bash
-mage start
+make start
 ```
 
-To start ONLY Cardinal in dev mode (compatible with the Retool dashboard):
-
-```bash
-mage dev
-```
-
-To restart ONLY Cardinal:
-
-```bash
-mage restart
-```
-
-To stop Nakama and Cardinal:
-
-```bash
-mage stop
-```
-
-Alternatively, killing the `mage start` process will also stop Nakama and Cardinal
-
-Note, for now, if any Cardinal endpoints have been added or removed Nakama must be relaunched (via `mage stop` and `mage start`).
-We will add a future to hot reload this in the future.
+Killing the `make start` process will also stop Nakama and Cardinal
 
 # Verify Nakama is Running
 
@@ -82,7 +44,7 @@ The API Explorer (on the sidebar) allows you to make requests to both Nakama and
 
 Before using any endpoints, you need to populate the User ID field (between the endpoint dropdown and the submit button). 
 The user ID `00000000-0000-0000-0000-000000000000` is a special admin user ID that will always be defined. Alternatively, 
-a new user can be created by selecting the `Authenticate Device` endpoint from the dropdown. Populate the request boy
+a new user can be created by selecting the `Authenticate Device` endpoint from the dropdown. Populate the request body
 with a payload like:
 
 ```json
