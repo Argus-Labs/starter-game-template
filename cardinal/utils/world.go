@@ -12,7 +12,7 @@ func NewWorld(addr string, password string, deployMode string, options ...cardin
 		addr = "localhost:6379"
 	}
 	if deployMode == "development" {
-		options = append(options, cardinal.WithPrettyLog())
+		options = append(options, cardinal.WithPrettyLog(), cardinal.WithCORS())
 	}
 
 	res, err := cardinal.NewWorld(addr, password, options...)
