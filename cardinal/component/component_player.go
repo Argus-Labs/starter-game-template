@@ -1,9 +1,9 @@
 package component
 
-type PlayerComponent struct {
+type Player struct {
 	Nickname string `json:"nickname"`
 }
 
-func (PlayerComponent) Name() string {
+func (Player) Name() string {
 	return "Player"
 }
