@@ -12,7 +12,7 @@ func NewWorld(addr string, password string, deployMode string, options ...cardin
 		addr = "localhost:6379"
 	}
 	if deployMode == "development" {
-		options = append(options, cardinal.WithPrettyLog())
+		options = append(options, cardinal.WithPrettyLog(), cardinal.WithCORS())
 	}
 
 	res, err := cardinal.NewWorld(addr, password, options...)
@@ -32,7 +32,7 @@ func NewEmbeddedWorld(deployMode string) *cardinal.World {
 	log.Info().Msg("Running in embedded mode, using embedded miniredis")
 	options := make([]cardinal.WorldOption, 0)
 	if deployMode == "development" {
-		options = append(options, cardinal.WithPrettyLog())
+		options = append(options, cardinal.WithPrettyLog(), cardinal.WithCORS())
 	}
 	res, err := cardinal.NewMockWorld(options...)
 	if err != nil {
