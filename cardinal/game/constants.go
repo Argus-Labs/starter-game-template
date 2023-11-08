@@ -1,11 +1,11 @@
 package game
 
-type IConstant struct {
+type Constant struct {
 	Label string
 	Value any
 }
 
-type IWorldConstants struct {
+type WorldConstants struct {
 	SeedWord    string
 	PlayerCount int
 }
@@ -13,15 +13,13 @@ type IWorldConstants struct {
 var (
 	// ExposedConstants If you want the constant to be queryable through `query_constant`,
 	// make sure to add the constant to the list of exposed constants
-	ExposedConstants = []IConstant{
+	ExposedConstants = []Constant{
 		{
 			Label: "world",
-			Value: WorldConstants,
+			Value: WorldConstants{
+				SeedWord:    "SeedWord1",
+				PlayerCount: 0,
+			},
 		},
-	}
-
-	WorldConstants = IWorldConstants{
-		SeedWord:    "SeedWord1",
-		PlayerCount: 0,
 	}
 )

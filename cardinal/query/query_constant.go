@@ -2,8 +2,8 @@ package query
 
 import (
 	"errors"
-
 	"github.com/argus-labs/starter-game-template/cardinal/game"
+
 	"pkg.world.dev/world-engine/cardinal"
 )
 
