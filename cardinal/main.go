@@ -24,20 +24,20 @@ func main() {
 	// and set REDIS_ADDR and REDIS_PASSWORD to use a real Redis instance.
 	// Otherwise, by default cardinal will run using an in-memory redis.
 	// TODO: When launching to production, you should enable signature verification.
-	world := NewWorld(cfg, cardinal.WithDisableSignatureVerification())
+	w := NewWorld(cfg, cardinal.WithDisableSignatureVerification())
 
 	// Register components
 	// NOTE: You must register your components here,
 	// otherwise it will show an error when you try to use them in a system.
 	Must(
-		cardinal.RegisterComponent[component.Player](world),
-		cardinal.RegisterComponent[component.Health](world),
+		cardinal.RegisterComponent[component.Player](w),
+		cardinal.RegisterComponent[component.Health](w),
 	)
 
 	// Register transactions
 	// NOTE: You must register your transactions here,
 	// otherwise it will show an error when you try to use them in a system.
-	Must(cardinal.RegisterTransactions(world,
+	Must(cardinal.RegisterTransactions(w,
 		tx.CreatePlayer,
 		tx.AttackPlayer,
 	))
@@ -45,7 +45,7 @@ func main() {
 	// Register read endpoints
 	// NOTE: You must register your read endpoints here,
 	// otherwise it will not be accessible.
-	Must(cardinal.RegisterQueries(world,
+	Must(cardinal.RegisterQueries(w,
 		query.Constant,
 	))
 
@@ -53,13 +53,13 @@ func main() {
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
 	// For example, you may want to run the attack system before the regen system
 	// so that the player's HP is subtracted (and player killed if it reaches 0) before HP is regenerated.
-	cardinal.RegisterSystems(world,
+	cardinal.RegisterSystems(w,
 		system.AttackSystem,
 		system.RegenSystem,
 		system.PlayerSpawnerSystem,
 	)
 
-	Must(world.StartGame())
+	Must(w.StartGame())
 }
 
 func Must(err ...error) {
