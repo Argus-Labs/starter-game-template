@@ -32,6 +32,7 @@ services:
     restart: always
   cardinal:
     build: ./cardinal
+    restart: unless-stopped
     depends_on:
       - redis
     expose:
@@ -45,6 +46,7 @@ services:
   nakama:
     platform: linux/amd64
     image: us-docker.pkg.dev/argus-labs/world-engine/relay/nakama@sha256:60737f1de75b5e1dfe0f1eb557ebf6f8c691cc2812950dc4e3132242709ddc09
+    restart: unless-stopped
     depends_on:
       cockroachdb:
         condition: service_healthy
