@@ -1,5 +1,40 @@
 version: "3"
 services:
+  celestia-devnet:
+    container_name: celestia_devnet
+    image: ghcr.io/rollkit/local-celestia-devnet:v0.12.1
+    restart: on-failure
+    ports:
+      - "26657"
+      - "26658"
+      - "26659"
+      - "9090"
+
+  evm:
+    container_name: evm_base_shard
+    environment:
+      - DA_AUTH_TOKEN=${DA_AUTH_TOKEN:-} # this value must come from the celestia client. https://docs.celestia.org/developers/node-tutorial#auth-token
+      - DA_BASE_URL=${DA_BASE_URL:-http://celestia-devnet:26658}
+      - DA_NAMESPACE_ID=${DA_NAMESPACE_ID:-67480c4a88c4d12935d4}
+      - CHAIN_ID=${CHAIN_ID:-world-engine}
+        # this is a test mnemonic and should not be used in production. this mnemonic can be overwritten using the KEY_MNEMONIC environment variable
+      - KEY_MNEMONIC=${KEY_MNEMONIC:-enact adjust liberty squirrel bulk ticket invest tissue antique window thank slam unknown fury script among bread social switch glide wool clog flag enroll}
+      - FAUCET_ADDR=${FAUCET_ADDR:-world142fg37yzx04cslgeflezzh83wa4xlmjpms0sg5}
+      - BLOCK_TIME=${BLOCK_TIME:-1s}
+    image: us-docker.pkg.dev/argus-labs/world-engine/chain:latest
+    expose:
+      - "1317"
+      - "26657"
+      - "9090"
+      - "9601"
+      - "8545"
+    ports:
+      - "1317:1317"
+      - "26657:26657"
+      - "9090:9090"
+      - "9601:9601"
+      - "8545:8545"
+
   cockroachdb:
     # Only use cockroachdb single-node clusters for non-production environment
     image: cockroachdb/cockroach:latest-v23.1
@@ -22,6 +57,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
+
   redis: # This doesn't have the correct persistence settings. Don't use on for prod.
     image: redis:latest
     command: redis-server # TODO: This runs without password. Don't use for prod.
@@ -30,6 +66,7 @@ services:
     ports:
       - "6379:6379"
     restart: always
+
   cardinal:
     build: ./cardinal
     depends_on:
@@ -43,6 +80,7 @@ services:
       - REDIS_ADDR=redis:6379
       - REDIS_MODE=normal
     restart: unless-stopped
+
   nakama:
     platform: linux/amd64
     image: us-docker.pkg.dev/argus-labs/world-engine/relay/nakama@sha256:60737f1de75b5e1dfe0f1eb557ebf6f8c691cc2812950dc4e3132242709ddc09
@@ -77,5 +115,6 @@ services:
       - "7350:7350"
       - "7351:7351"
     restart: unless-stopped
+
 volumes:
   data:
