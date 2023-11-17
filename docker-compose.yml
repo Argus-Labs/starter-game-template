@@ -79,6 +79,7 @@ services:
       - CARDINAL_PORT=3333
       - REDIS_ADDR=redis:6379
       - REDIS_MODE=normal
+    restart: unless-stopped
 
   nakama:
     platform: linux/amd64
