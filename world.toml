@@ -2,11 +2,10 @@
 # directory can be changed by uncommenting this line:
 # root_dir="/path/to/cardinal/"
 
-[docker_env]
-# Cardinal flags
+[cardinal]
 CARDINAL_NAMESPACE="my-world-1"
 
-# EVM Flags
+[evm]
 # this value must come from the celestia client. https://docs.celestia.org/developers/node-tutorial#auth-token
 DA_AUTH_TOKEN=""
 DA_BASE_URL="http://celestia-devnet:26658"
