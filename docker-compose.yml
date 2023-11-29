@@ -20,6 +20,7 @@ services:
         # this is a test mnemonic and should not be used in production. this mnemonic can be overwritten using the KEY_MNEMONIC environment variable
       - KEY_MNEMONIC=${KEY_MNEMONIC:-enact adjust liberty squirrel bulk ticket invest tissue antique window thank slam unknown fury script among bread social switch glide wool clog flag enroll}
       - FAUCET_ADDR=${FAUCET_ADDR:-world142fg37yzx04cslgeflezzh83wa4xlmjpms0sg5}
+	# Note, ":-" signals a default value of "1s", NOT negative 1 second.
       - BLOCK_TIME=${BLOCK_TIME:-1s}
     image: us-docker.pkg.dev/argus-labs/world-engine/chain:latest
     expose:
