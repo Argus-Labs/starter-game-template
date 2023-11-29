@@ -60,8 +60,8 @@ services:
         condition: service_started
     environment:
       - CARDINAL_ADDR=${CARDINAL_ADDR:-cardinal:3333}
-      - CARDINAL_NAMESPACE=world
-      - DB_PASSWORD=${DB_PASSWORD:-development}
+      - CARDINAL_NAMESPACE=${CARDINAL_NAMESPACE}
+      - DB_PASSWORD=${DB_PASSWORD:-very_unsafe_password_replace_me}
     entrypoint:
       - "/bin/sh"
       - "-ecx"
@@ -98,7 +98,7 @@ services:
     command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all
     environment:
       - POSTGRES_DB=nakama
-      - POSTGRES_PASSWORD=localdb
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-very_unsafe_password_replace_me}
     expose:
       - "8080"
       - "5432"
@@ -121,7 +121,7 @@ services:
   #   environment:
   #     - COCKROACH_DATABASE=nakama
   #     - COCKROACH_USER=root
-  #     - COCKROACH_PASSWORD=${DB_PASSWORD:-development}
+  #     - COCKROACH_PASSWORD=${DB_PASSWORD:-very_unsafe_password_replace_me}
   #   volumes:
   #     - data:/var/lib/cockroach
   #   expose:
@@ -137,6 +137,7 @@ services:
   #     retries: 5
 
   redis:
+    container_name: redis
     image: redis:latest
     command: redis-server
     expose:

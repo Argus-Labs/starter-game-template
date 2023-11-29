@@ -16,4 +16,4 @@ CHAIN_ID="world-engine"
 # This mnemonic can be overwritten by setting the KEY_MNEMONIC environment variable.
 KEY_MNEMONIC="enact adjust liberty squirrel bulk ticket invest tissue antique window thank slam unknown fury script among bread social switch glide wool clog flag enroll"
 FAUCET_ADDR="world142fg37yzx04cslgeflezzh83wa4xlmjpms0sg5"
-BLOCK_TIME=-1
+BLOCK_TIME=1
