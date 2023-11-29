@@ -35,7 +35,7 @@ services:
       - "9601:9601"
       - "8545:8545"
 
-  cockroachdb:
+  postgres:
     # Only use cockroachdb single-node clusters for non-production environment
     image: cockroachdb/cockroach:latest-v23.1
     command: start-single-node --insecure --store=attrs=ssd,path=/var/lib/cockroach/,size=20%
@@ -86,7 +86,7 @@ services:
     platform: linux/amd64
     image: us-docker.pkg.dev/argus-labs/world-engine/relay/nakama@sha256:60737f1de75b5e1dfe0f1eb557ebf6f8c691cc2812950dc4e3132242709ddc09
     depends_on:
-      cockroachdb:
+      postgres:
         condition: service_healthy
       cardinal:
         condition: service_started
