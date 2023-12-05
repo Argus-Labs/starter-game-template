@@ -4,6 +4,7 @@
 
 [cardinal]
 CARDINAL_NAMESPACE="my-world-1"
+CARDINAL_MODE="production"
 
 [evm]
 # DA_AUTH_TOKEN is obtained from celestia client and passed in from world.toml. 
