@@ -3,8 +3,8 @@
 # root_dir="/path/to/cardinal/"
 
 [cardinal]
-CARDINAL_NAMESPACE="my-world-1"
 CARDINAL_PORT=3333
+CARDINAL_NAMESPACE="my-world-1"
 CARDINAL_MODE="development"
 
 [evm]
