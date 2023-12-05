@@ -6,6 +6,12 @@
 CARDINAL_PORT=3333
 CARDINAL_NAMESPACE="my-world-1"
 CARDINAL_MODE="development"
+#CARDINAL_MODE="production"
+
+# Uncomment this line to specify a custom redis address
+# REDIS_ADDRESS="localhost:6379"
+# Uncomment this line to specify a redis password; this must be non-empty when CARDINAL_MODE="production"
+# REDIS_PASSWORD=""
 
 [evm]
 # DA_AUTH_TOKEN is obtained from celestia client and passed in from world.toml. 

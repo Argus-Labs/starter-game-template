@@ -5,12 +5,14 @@ transaction relayer.
 
 # Prerequisites
 
-## Mage Check
+## World CLI
 
-A mage target exists that will check for some common pre-requisites. Run the check with:
+The [World CLI](https://github.com/Argus-Labs/world-cli) is a tool for creating, managing, and deploying World Engine projects. 
+
+Install the latest world-cli release with:
 
 ```bash
-mage check
+curl https://install.world.dev/cli! | bash
 ```
 
 ## Docker Compose
@@ -19,60 +21,52 @@ Docker and docker compose are required for running Nakama and both can be instal
 
 [Installation instructions for Docker Desktop](https://docs.docker.com/compose/install/#scenario-one-install-docker-desktop)
 
-## Mage
+# Cloning the Starter Game Template
 
-[Mage](https://magefile.org/) is a cross-platform Make-like build tool.
+To use the starter-game-template as a template for your own project, navigate to the directory where you want your project to live and run:
 
 ```bash
-git clone https://github.com/magefile/mage
-cd mage
-go run bootstrap.go
+world cardinal create
 ```
+You will be prompted for a game name. A copy of the starter-game-template will be created in the current directory.
 
 # Running the Server
 
-To start Nakama and Cardinal:
+Navigate to thew newly created project and run:
 
 ```bash
-mage start
+world cardinal start
 ```
 
-To start ONLY Cardinal in dev mode (compatible with the Retool dashboard):
+This command will use the `world.toml` config specified in your root project directory to run the following containers:
+- Cardinal
+- Redis
+- Nakama
+- Nakam's DB
+
+To stop the containers, run:
 
 ```bash
-mage dev
+world cardinal stop
 ```
 
-To restart ONLY Cardinal:
+# Interacting with Cardinal
 
-```bash
-mage restart
-```
+## Via the Cardinal Editor
 
-To stop Nakama and Cardinal:
+The Cardinal Editor is a web-based companion app that makes game development of Cardinal easier. It allows you to inspect the state of Cardinal in real-time without any additional code.
 
-```bash
-mage stop
-```
+Then, open the [Cardinal Editor](https://editor.world.dev) in a web browser.
 
-Alternatively, killing the `mage start` process will also stop Nakama and Cardinal
+To start, there will be no data stored in Cardinal. As you interact with Cardinal (e.g. by creating a Persona Tag via Nakama), your new Cardinal state will show up in the Cardinal Editor.
 
-Note, for now, if any Cardinal endpoints have been added or removed Nakama must be relaunched (via `mage stop` and `mage start`).
-We will add a future to hot reload this in the future.
+## Via Nakama
 
-# Verify Nakama is Running
-
-Visit `localhost:7351` in a web browser to access the Nakama console. For local development, use `admin:password` as your login
-credentials.
+With the containers running visit `localhost:7351` in a web browser to access the Nakama console. For local development, use `admin:password` as your login credentials.
 
 The Account tab on the left will give you access to a valid account ID.
 
 The API Explorer tab on the left will allow you to make requests to Cardinal.
-
-# Nakama Console
-
-You can verify the Nakama server is running by visiting `localhost:7351` in a web browser. For local development, use 
-`admin:password` as our login credentials.
 
 ## API Explorer
 
@@ -95,10 +89,9 @@ with a payload like:
 }
 ```
 
-And hit `Submit` no. User ID is required for this endpoint.
+And hit `Submit` no User ID is required for this endpoint.
 
-To get the User ID of your newly created account, click the `Accounts` item in the sidebar. Copy the relevant User ID 
-and paste it into the User ID field on the API Explorer to hit other endpoints.
+To get the User ID of your newly created account, click the `Accounts` item in the sidebar. Copy the relevant User ID and paste it into the User ID field on the API Explorer to hit other endpoints.
 
 ### Claiming a Persona Tag
 
@@ -127,16 +120,16 @@ to the `nakama/claim-persona` response, except "status" should now say "accepted
 
 This mean both Nakama and Cardinal are aware of your Nakama user and the related Persona Tag.
 
-### Custom Transactions
+### Custom Messages
 
-Once your persona tag has been set up, you send transactions to your custom cardinal transaction endpoints. If
-you set up a transaction like this:
+Once your persona tag has been set up, you can send messages to your custom cardinal message endpoints. If
+you set up a message like this:
 
 ```go
 package main
 
 import (
-	"pkg.world.dev/world-engine/cardinal/ecs"
+	"pkg.world.dev/world-engine/cardinal"
 )
 
 type MoveMsg struct {
@@ -147,15 +140,20 @@ type MoveReply struct {
 	FinalX, FinalY int
 }
 
-var MoveTx = ecs.NewTransactionType[MoveMsg, MoveReply]("move")
+var MoveTx = cardinal.NewMessageType[MoveMsg, MoveReply]("move")
 
 func main() {
-	world := inmem.NewECSWorld()
-	world.RegisterTransaction(MoveTx)
+	world, err := cardinal.NewWorld(cardinal.WithDisableSignatureVerification())
+	if err != nil {
+		panic(err)
+	}
+	// ...
+	world.RegisterMessages(MoveTx)
+	// ...
 }
 ```
 
-The dropdown will contain an entry with `tx-move`. The request body for that transaction could be:
+The dropdown will contain an entry with `tx/game/move`. The request body for that message could be:
 ```json
 {
 	"Dx": 100,
@@ -163,22 +161,10 @@ The dropdown will contain an entry with `tx-move`. The request body for that tra
 }
 ```
 
-Hit submit, and the transaction will be sent to your cardinal implementation. What your game does with the transaction
-depends on what Systems you've defined.
+Hit submit, and the message will be sent to your cardinal implementation. What your game does with the message depends on the Systems you've defined.
 
-## Storage
+# Your World
 
-The `Storage` item in the sidebar allows you to view Nakama user data. Storage objects with a key name of `personaTag`
-describe which persona tag has been associated with user ID.
+The code in <your-project-name>/cardinal/... powers your cardinal project. The entry point of your game is main.go, and that files contains sample code for setting up Components, Messages, Queries, and Systems. 
 
-# Cardinal Editor
-
-The Cardinal Editor is a web-based companion app that makes game development of Cardinal easier. It allows you to inspect the state of Cardinal in real-time without any additional code.
-
-To work with the Cardinal Editor, you must first start the Cardinal server in dev mode:
-
-```bash
-mage dev
-```
-
-Then, open the [Cardinal Editor](https://editor.world.dev) in a web browser.
+[Check out the official World Engine documentation](https://world.dev/Cardinal/API-Reference/Components) for more details on how to build your World!
