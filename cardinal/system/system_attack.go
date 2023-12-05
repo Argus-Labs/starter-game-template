@@ -4,59 +4,29 @@ import (
 	"fmt"
 
 	comp "github.com/argus-labs/starter-game-template/cardinal/component"
-	"github.com/argus-labs/starter-game-template/cardinal/tx"
+	"github.com/argus-labs/starter-game-template/cardinal/msg"
 	"pkg.world.dev/world-engine/cardinal"
 )
 
-// AttackSystem is a system that inflict damage to player's HP based on `AttackPlayer` transactions.
-// This provides a simple example of how to create a system that modifies the component of an entity.
-func AttackSystem(wCtx cardinal.WorldContext) error {
-	// Get all the transactions that are of type CreatePlayer from the tx queue
+const AttackDamage = 10
 
-	// Create an index of player tags to its health component
-	playerTagToID := map[string]cardinal.EntityID{}
-	q, err := wCtx.NewSearch(cardinal.Exact(comp.PlayerComponent{}, comp.HealthComponent{}))
-	if err != nil {
-		return err
-	}
-	err = q.Each(wCtx, func(id cardinal.EntityID) bool {
-		player, err := cardinal.GetComponent[comp.PlayerComponent](wCtx, id)
-		if err != nil {
-			return true
-		}
+// AttackSystem inflict damage to player's HP based on `AttackPlayer` transactions.
+// This provides an example of a system that modifies the component of an entity.
+func AttackSystem(world cardinal.WorldContext) error {
+	msg.AttackPlayer.Each(world,
+		func(attack cardinal.TxData[msg.AttackPlayerMsg]) (msg.AttackPlayerMsgReply, error) {
+			playerID, playerHealth, err := queryTargetPlayer(world, attack.Msg().TargetNickname)
+			if err != nil {
+				return msg.AttackPlayerMsgReply{}, fmt.Errorf("failed to inflict damage: %w", err)
+			}
 
-		playerTagToID[player.Nickname] = id
-		return true
-	})
-	if err != nil {
-		return err
-	}
+			playerHealth.HP -= AttackDamage
+			if err := cardinal.SetComponent[comp.Health](world, playerID, playerHealth); err != nil {
+				return msg.AttackPlayerMsgReply{}, fmt.Errorf("failed to inflict damage: %w", err)
+			}
 
-	// Iterate through all transactions and process them individually.
-	// DEV: it's important here that you don't break out of the loop or return an error here
-	// or otherwise the rest of the transaction will not be processed & get dropped.
-	// In the future, you will be able to add error receipts to transaction receipts.
-	tx.AttackPlayer.ForEach(wCtx, func(attack cardinal.TxData[tx.AttackPlayerMsg]) (tx.AttackPlayerMsgReply, error) {
-		target := attack.Value().TargetNickname
-		targetPlayerID, ok := playerTagToID[target]
-		// If the target player doesn't exist, skip this transaction
-		if !ok {
-			return tx.AttackPlayerMsgReply{}, fmt.Errorf("target %q does not exist", target)
-		}
-
-		// Get the health component for the target player
-		health, err := cardinal.GetComponent[comp.HealthComponent](wCtx, targetPlayerID)
-		if err != nil {
-			return tx.AttackPlayerMsgReply{}, fmt.Errorf("can't get health for %q: %w", target, err)
-		}
-
-		// Inflict damage and update the component
-		health.HP -= 10
-		if err := cardinal.SetComponent[comp.HealthComponent](wCtx, targetPlayerID, health); err != nil {
-			return tx.AttackPlayerMsgReply{}, fmt.Errorf("failed to set health on %q: %w", target, err)
-		}
-		return tx.AttackPlayerMsgReply{}, nil
-	})
-
+			return msg.AttackPlayerMsgReply{Damage: AttackDamage}, nil
+		},
+	)
 	return nil
 }

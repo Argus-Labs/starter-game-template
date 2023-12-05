@@ -1,4 +1,4 @@
-package tx
+package msg
 
 import (
 	"pkg.world.dev/world-engine/cardinal"
@@ -8,8 +8,8 @@ type CreatePlayerMsg struct {
 	Nickname string `json:"nickname"`
 }
 
-type CreatePlayerMsgReply struct {
+type CreatePlayerResult struct {
 	Success bool `json:"success"`
 }
 
-var CreatePlayer = cardinal.NewTransactionType[CreatePlayerMsg, CreatePlayerMsgReply]("create-player")
+var CreatePlayer = cardinal.NewMessageType[CreatePlayerMsg, CreatePlayerResult]("create-player")

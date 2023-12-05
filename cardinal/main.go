@@ -2,74 +2,56 @@ package main
 
 import (
 	"errors"
-	"os"
-
-	"github.com/argus-labs/starter-game-template/cardinal/query"
-
 	"github.com/argus-labs/starter-game-template/cardinal/component"
+	"github.com/argus-labs/starter-game-template/cardinal/msg"
+	"github.com/argus-labs/starter-game-template/cardinal/query"
 	"github.com/argus-labs/starter-game-template/cardinal/system"
-	"github.com/argus-labs/starter-game-template/cardinal/tx"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"pkg.world.dev/world-engine/cardinal"
 )
 
 func main() {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
-	cfg := GetConfig()
-
-	// TODO: In production, you should set DEPLOY_MODE=production
-	// and set REDIS_ADDR and REDIS_PASSWORD to use a real Redis instance.
-	// Otherwise, by default cardinal will run using an in-memory redis.
-	// TODO: When launching to production, you should enable signature verification.
-	world := NewWorld(cfg, cardinal.WithDisableSignatureVerification())
+	w, err := cardinal.NewWorld(cardinal.WithDisableSignatureVerification())
+	if err != nil {
+		log.Fatal().Err(err).Msg("")
+	}
 
 	// Register components
-	// NOTE: You must register your components here,
-	// otherwise it will show an error when you try to use them in a system.
-	err := errors.Join(
-		cardinal.RegisterComponent[component.PlayerComponent](world),
-		cardinal.RegisterComponent[component.HealthComponent](world))
-	if err != nil {
-		log.Fatal().Err(err)
-	}
-
-	// Register transactions
-	// NOTE: You must register your transactions here,
-	// otherwise it will show an error when you try to use them in a system.
-	err = cardinal.RegisterTransactions(world,
-		tx.CreatePlayer,
-		tx.AttackPlayer,
+	// NOTE: You must register your components here for it to be accessible.
+	Must(
+		cardinal.RegisterComponent[component.Player](w),
+		cardinal.RegisterComponent[component.Health](w),
 	)
-	if err != nil {
-		log.Fatal().Err(err)
-	}
 
-	// Register read endpoints
-	// NOTE: You must register your read endpoints here,
-	// otherwise it will not be accessible.
-	err = cardinal.RegisterQueries(world,
-		query.Constant,
+	// Register messages (user action)
+	// NOTE: You must register your transactions here for it to be executed.
+	Must(cardinal.RegisterMessages(w,
+		msg.CreatePlayer,
+		msg.AttackPlayer,
+	))
+
+	// Register queries
+	// NOTE: You must register your queries here for it to be accessible.
+	Must(
+		cardinal.RegisterQuery[query.WorldVarsRequest, query.WorldVarsResponse](w, "world-vars", query.WorldVars),
 	)
-	if err != nil {
-		log.Fatal().Err(err)
-	}
 
 	// Each system executes deterministically in the order they are added.
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
 	// For example, you may want to run the attack system before the regen system
 	// so that the player's HP is subtracted (and player killed if it reaches 0) before HP is regenerated.
-
-	cardinal.RegisterSystems(world,
+	Must(cardinal.RegisterSystems(w,
 		system.AttackSystem,
 		system.RegenSystem,
-		system.PlayerSpawnerSystem)
+		system.PlayerSpawnerSystem,
+	))
 
-	err = world.StartGame()
-	if err != nil {
-		panic(err)
+	Must(w.StartGame())
+}
+
+func Must(err ...error) {
+	e := errors.Join(err...)
+	if e != nil {
+		log.Fatal().Err(e).Msg("")
 	}
-
 }
