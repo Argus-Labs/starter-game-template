@@ -2,6 +2,7 @@ module github.com/argus-labs/starter-game-template/cardinal
 
 go 1.21.0
 
+// external, necessary replacements
 replace (
 	github.com/cockroachdb/pebble => github.com/cockroachdb/pebble v0.0.0-20230928194634-aa077af62593
 
@@ -9,11 +10,12 @@ replace (
 	github.com/ethereum/go-ethereum => github.com/berachain/polaris-geth v0.0.0-20231105185655-b78967bb230f
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
 
 require (
 	github.com/rs/zerolog v1.30.0
-	pkg.world.dev/world-engine/cardinal v0.1.50-alpha
+	pkg.world.dev/world-engine/cardinal v0.6.0-alpha
 )
 
 require (

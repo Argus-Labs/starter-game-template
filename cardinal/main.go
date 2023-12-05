@@ -13,7 +13,7 @@ import (
 func main() {
 	w, err := cardinal.NewWorld(cardinal.WithDisableSignatureVerification())
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Fatal().Err(err).Msg("")
 	}
 
 	// Register components
@@ -51,7 +51,7 @@ func main() {
 
 func Must(err ...error) {
 	e := errors.Join(err...)
-	if err != nil {
-		log.Fatal().Err(e)
+	if e != nil {
+		log.Fatal().Err(e).Msg("")
 	}
 }
