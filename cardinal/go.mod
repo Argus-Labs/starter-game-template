@@ -15,7 +15,7 @@ replace (
 
 require (
 	github.com/rs/zerolog v1.30.0
-	pkg.world.dev/world-engine/cardinal v0.6.0-alpha
+	pkg.world.dev/world-engine/cardinal v1.0.1-beta
 )
 
 require (
