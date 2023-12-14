@@ -57,7 +57,7 @@ services:
       cardinal:
         condition: service_started
     environment:
-      - CARDINAL_ADDR=${CARDINAL_ADDR:-cardinal:3333}
+      - CARDINAL_ADDR=${CARDINAL_ADDR:-cardinal:4040}
       - CARDINAL_NAMESPACE=${CARDINAL_NAMESPACE}
       - DB_PASSWORD=${DB_PASSWORD:-very_unsafe_password_replace_me}
     entrypoint:
