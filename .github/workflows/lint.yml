@@ -2,29 +2,30 @@ name: Lint
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+
 jobs:
-  golangci-lint:
-    name: golangci-lint
-    runs-on: ubuntu-latest
+  lint-go:
+    name: Go
+    runs-on: macos-14
     env:
-      GO_VERSION: 1.21.0
-      GOLANGCI_VERSION: v1.54.2
-    strategy:
-      matrix:
-        lint-workdir: [cardinal]
+      GO_VERSION: 1.22.1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Golang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: "**/*.sum"
-      - name: Install golangci-lint
-        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@${{ env.GOLANGCI_VERSION }}
-      - name: Lint
-        working-directory: ${{ matrix.lint-workdir }}
-        run: golangci-lint run  --timeout=10m --concurrency 4 -v
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.56.2
+          args: --timeout=10m -v
+          working-directory: ./cardinal
