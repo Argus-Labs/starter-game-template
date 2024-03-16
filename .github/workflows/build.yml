@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-cardinal:
-    name: Build Cardinal
+    name: Cardinal
     runs-on: ubuntu-latest
     defaults:
       run:

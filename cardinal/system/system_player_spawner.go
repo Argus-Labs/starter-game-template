@@ -25,11 +25,13 @@ func PlayerSpawnerSystem(world cardinal.WorldContext) error {
 				return msg.CreatePlayerResult{}, fmt.Errorf("error creating player: %w", err)
 			}
 
-			err = world.EmitEvent(fmt.Sprintf("new player %d created", id))
+			err = world.EmitEvent(map[string]any{
+				"event": "new_player",
+				"id":    id,
+			})
 			if err != nil {
 				return msg.CreatePlayerResult{}, err
 			}
 			return msg.CreatePlayerResult{Success: true}, nil
 		})
-	return nil
 }

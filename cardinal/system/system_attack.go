@@ -29,6 +29,5 @@ func AttackSystem(world cardinal.WorldContext) error {
 			}
 
 			return msg.AttackPlayerMsgReply{Damage: AttackDamage}, nil
-
 		})
 }
