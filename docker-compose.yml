@@ -19,6 +19,7 @@ services:
       - REDIS_ADDRESS=${REDIS_ADDRESS:-redis:6379}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_MODE=normal
+      - ROUTER_KEY=${ROUTER_KEY}
     restart: unless-stopped
 
   cardinal-debug:
@@ -46,6 +47,7 @@ services:
       - REDIS_ADDRESS=${REDIS_ADDRESS:-redis:6379}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_MODE=normal
+      - ROUTER_KEY=${ROUTER_KEY}
     restart: unless-stopped
 
   evm:
@@ -63,6 +65,7 @@ services:
       - FAUCET_ADDR=${FAUCET_ADDR:-world142fg37yzx04cslgeflezzh83wa4xlmjpms0sg5}
       # Note, ":-" signals a default value of "1s", NOT negative 1 second.
       - BLOCK_TIME=${BLOCK_TIME:-1s}
+      - ROUTER_KEY=${ROUTER_KEY}
     image: us-docker.pkg.dev/argus-labs/world-engine/chain:latest
     expose:
       - "1317"
