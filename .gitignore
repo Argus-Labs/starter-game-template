@@ -117,3 +117,6 @@ $RECYCLE.BIN/
 # Node
 /.jsclient/node_modules
 yarn-error.log
+
+# cardinal editor dir
+.editor
