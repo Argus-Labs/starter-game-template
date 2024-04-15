@@ -33,3 +33,7 @@ ENABLE_ALLOWLIST="false" # enable nakama's beta key feature. you can generate an
 # The number of undelivered notifications Nakama will allow before shutting down a connectino to a client.
 # See https://heroiclabs.com/docs/nakama/getting-started/configuration/#socket.outgoing_queue_size 
 OUTGOING_QUEUE_SIZE=64
+
+[commmon]
+# ROUTER_KEY secures the communication across the router service. Can be generated with `openssl rand -hex 32`.
+ROUTER_KEY=4a02ea35e37727a2e22b62520c03a3cf0b139418a4401027baedfc93834dc6bd
