@@ -151,7 +151,8 @@ func getMsgID(t *testing.T, world *cardinal.World, fullName string) types.Messag
 	return msg.ID()
 }
 
-// getReceiptFromPastTick search past ticks for a txHash that ma
+// getReceiptFromPastTick search past ticks for a txHash that matches the given txHash. An error will be returned if
+// the txHash cannot be found in Cardinal's history.
 func getReceiptFromPastTick(t *testing.T, world *cardinal.World, txHash types.TxHash) receipt.Receipt {
 	tick := world.CurrentTick()
 	for {
