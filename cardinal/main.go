@@ -18,6 +18,14 @@ func main() {
 		log.Fatal().Err(err).Msg("")
 	}
 
+	MustInitWorld(w)
+
+	Must(w.StartGame())
+}
+
+// MustInitWorld registers all components, messages, queries, and systems. This initialization happens in a helper
+// function so that this can be used directly in tests.
+func MustInitWorld(w *cardinal.World) {
 	// Register components
 	// NOTE: You must register your components here for it to be accessible.
 	Must(
@@ -43,12 +51,15 @@ func main() {
 	// For example, you may want to run the attack system before the regen system
 	// so that the player's HP is subtracted (and player killed if it reaches 0) before HP is regenerated.
 	Must(cardinal.RegisterSystems(w,
+		system.RecoverPlayersSystem,
 		system.AttackSystem,
 		system.RegenSystem,
 		system.PlayerSpawnerSystem,
 	))
 
-	Must(w.StartGame())
+	Must(cardinal.RegisterInitSystems(w,
+		system.SpawnDefaultPlayersSystem,
+	))
 }
 
 func Must(err ...error) {
