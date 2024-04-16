@@ -18,9 +18,9 @@ const (
 	createMsgName = "game.create-player"
 )
 
-// TestErrorWhenAttackTargetDoesNotExist ensures the attack message results in an error when the given target does
-// not exist. Note, message errors are stored in receipts; they are NOT returned from the relevant system.
-func TestErrorWhenAttackTargetDoesNotExist(t *testing.T) {
+// TestSystem_AttackSystem_ErrorWhenTargetDoesNotExist ensures the attack message results in an error when the given
+// target does not exist. Note, message errors are stored in receipts; they are NOT returned from the relevant system.
+func TestSystem_AttackSystem_ErrorWhenTargetDoesNotExist(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
 
@@ -36,9 +36,9 @@ func TestErrorWhenAttackTargetDoesNotExist(t *testing.T) {
 	}
 }
 
-// TestCanCreatePlayer ensure the CreatePlayer message can be used to create a new player with the default amount of
-// health. cardinal.NewSearch is used to find the newly created player.
-func TestCanCreatePlayers(t *testing.T) {
+// TestSystem_PlayerSpawnerSystem_CanCreatePlayer ensures the CreatePlayer message can be used to create a new player
+// with the default amount of health. cardinal.NewSearch is used to find the newly created player.
+func TestSystem_PlayerSpawnerSystem_CanCreatePlayer(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
 
@@ -75,9 +75,9 @@ func TestCanCreatePlayers(t *testing.T) {
 	}
 }
 
-// TestAttackingTargetReducesTheirHealth ensures an attack message can find an existing target the reduce the target's
-// health.
-func TestAttackingTargetReducesTheirHealth(t *testing.T) {
+// TestSystem_AttackSystem_AttackingTargetReducesTheirHealth ensures an attack message can find an existing target the
+// reduce the target's health.
+func TestSystem_AttackSystem_AttackingTargetReducesTheirHealth(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
 
