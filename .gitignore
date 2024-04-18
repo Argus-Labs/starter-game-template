@@ -121,4 +121,4 @@ yarn-error.log
 # cardinal editor dir
 .editor
 # tmp dir from world cardinal dev --watch
-cardina/tmp
+cardinal/tmp
