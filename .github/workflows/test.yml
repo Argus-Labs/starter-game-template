@@ -27,4 +27,6 @@ jobs:
         with:
           cache: go
       - name: Run Unit Test
-        run: make test
+        run: |
+          cd cardinal
+          make test
