@@ -24,3 +24,6 @@ lint-fix:
 	@$(MAKE) lint-install
 	@echo "--> Running golangci-lint"
 	@golangci-lint run  --timeout=10m --fix --concurrency 8 -v
+
+test:
+	@go test ./...
