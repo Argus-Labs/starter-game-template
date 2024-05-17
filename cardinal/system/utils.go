@@ -15,7 +15,8 @@ func queryTargetPlayer(world cardinal.WorldContext, targetNickname string) (type
 	var playerID types.EntityID
 	var playerHealth *comp.Health
 	var err error
-	searchErr := cardinal.NewSearch(world, filter.Exact(comp.Player{}, comp.Health{})).Each(
+	searchErr := cardinal.NewSearch().Entity(
+		filter.Exact(filter.Component[comp.Player](), filter.Component[comp.Health]())).Each(world,
 		func(id types.EntityID) bool {
 			var player *comp.Player
 			player, err = cardinal.GetComponent[comp.Player](world, id)

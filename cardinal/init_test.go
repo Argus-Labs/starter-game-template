@@ -25,21 +25,22 @@ func TestInitSystem_SpawnDefaultPlayersSystem_DefaultPlayersAreSpawned(t *testin
 	wCtx := cardinal.NewReadOnlyWorldContext(tf.World)
 
 	foundPlayers := map[string]bool{}
-	searchErr := cardinal.NewSearch(wCtx, filter.Contains(component.Health{})).Each(func(id types.EntityID) bool {
-		player, err := cardinal.GetComponent[component.Player](wCtx, id)
-		if err != nil {
-			t.Fatalf("failed to get player: %v", err)
-		}
-		health, err := cardinal.GetComponent[component.Health](wCtx, id)
-		if err != nil {
-			t.Fatalf("failed to get health: %v", err)
-		}
-		if health.HP < 100 {
-			t.Fatalf("new player should have at least 100 health; got %v", health.HP)
-		}
-		foundPlayers[player.Nickname] = true
-		return true
-	})
+	searchErr := cardinal.NewSearch().Entity(filter.Contains(filter.Component[component.Health]())).
+		Each(wCtx, func(id types.EntityID) bool {
+			player, err := cardinal.GetComponent[component.Player](wCtx, id)
+			if err != nil {
+				t.Fatalf("failed to get player: %v", err)
+			}
+			health, err := cardinal.GetComponent[component.Health](wCtx, id)
+			if err != nil {
+				t.Fatalf("failed to get health: %v", err)
+			}
+			if health.HP < 100 {
+				t.Fatalf("new player should have at least 100 health; got %v", health.HP)
+			}
+			foundPlayers[player.Nickname] = true
+			return true
+		})
 	if searchErr != nil {
 		t.Fatalf("failed to perform search: %v", searchErr)
 	}
