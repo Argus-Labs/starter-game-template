@@ -3,6 +3,8 @@ package main
 import (
 	"testing"
 
+	"gotest.tools/v3/assert"
+
 	"pkg.world.dev/world-engine/cardinal"
 	"pkg.world.dev/world-engine/cardinal/receipt"
 	"pkg.world.dev/world-engine/cardinal/search/filter"
@@ -58,13 +60,21 @@ func TestSystem_PlayerSpawnerSystem_CanCreatePlayer(t *testing.T) {
 	wCtx := cardinal.NewReadOnlyWorldContext(tf.World)
 	// This search demonstrates the use of a "Where" clause, which limits the search results to only the entity IDs
 	// that end up returning true from the anonymous function. In this case, we're looking for a specific nickname.
-	id := cardinal.NewSearch(wCtx, filter.All()).Where(func(id types.EntityID) bool {
+	acc := make([]types.EntityID, 0)
+	err := cardinal.NewSearch().Entity(filter.All()).Each(wCtx, func(id types.EntityID) bool {
 		player, err := cardinal.GetComponent[component.Player](wCtx, id)
 		if err != nil {
 			t.Fatalf("failed to get player component: %v", err)
 		}
-		return player.Nickname == nickname
-	}).MustFirst()
+		if player.Nickname == nickname {
+			acc = append(acc, id)
+			return false
+		}
+		return true
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, len(acc), 1)
+	id := acc[0]
 
 	health, err := cardinal.GetComponent[component.Health](wCtx, id)
 	if err != nil {
@@ -106,7 +116,7 @@ func TestSystem_AttackSystem_AttackingTargetReducesTheirHealth(t *testing.T) {
 	var found bool
 	// This search demonstrates the "Each" pattern. Every entity ID is considered, and as long as the anonymous
 	// function return true, the search will continue.
-	searchErr := cardinal.NewSearch(wCtx, filter.All()).Each(func(id types.EntityID) bool {
+	searchErr := cardinal.NewSearch().Entity(filter.All()).Each(wCtx, func(id types.EntityID) bool {
 		player, err := cardinal.GetComponent[component.Player](wCtx, id)
 		if err != nil {
 			t.Fatalf("failed to get player component for %v", id)
