@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"pkg.world.dev/world-engine/cardinal"
-	"pkg.world.dev/world-engine/cardinal/message"
 
 	comp "github.com/argus-labs/starter-game-template/cardinal/component"
 	"github.com/argus-labs/starter-game-template/cardinal/msg"
@@ -19,7 +18,7 @@ const (
 func PlayerSpawnerSystem(world cardinal.WorldContext) error {
 	return cardinal.EachMessage[msg.CreatePlayerMsg, msg.CreatePlayerResult](
 		world,
-		func(create message.TxData[msg.CreatePlayerMsg]) (msg.CreatePlayerResult, error) {
+		func(create cardinal.TxData[msg.CreatePlayerMsg]) (msg.CreatePlayerResult, error) {
 			id, err := cardinal.Create(world,
 				comp.Player{Nickname: create.Msg.Nickname},
 				comp.Health{HP: InitialHP},
