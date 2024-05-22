@@ -211,8 +211,9 @@ github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsT
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/swaggo/files/v2 v2.0.0 h1:hmAt8Dkynw7Ssz46F6pn8ok6YmGZqHSVLZ+HQM7i0kw=
 github.com/swaggo/files/v2 v2.0.0/go.mod h1:24kk2Y9NYEJ5lHuCra6iVwkMjIekMCaFq/0JQj66kyM=
-github.com/swaggo/swag v1.16.2 h1:28Pp+8DkQoV+HLzLx8RGJZXNGKbFqnuvSbAAtoxiY04=
 github.com/swaggo/swag v1.16.2/go.mod h1:6YzXnDcpr0767iOejs318CwYkCQqyGer6BizOg03f+E=
+github.com/swaggo/swag v1.16.3 h1:PnCYjPCah8FK4I26l2F/KQ4yz3sILcVUN3cTlBFA9Pg=
+github.com/swaggo/swag v1.16.3/go.mod h1:DImHIuOFXKpMFAQjcC7FG4m3Dg4+QuUgUzJmKjI/gRk=
 github.com/tidwall/gjson v1.14.2/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
 github.com/tidwall/gjson v1.17.0 h1:/Jocvlh98kcTfpN2+JzGQWQcqrPQwDrVEMApx/M5ZwM=
 github.com/tidwall/gjson v1.17.0/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
@@ -371,10 +372,8 @@ inet.af/netaddr v0.0.0-20230525184311-b8eac61e914a h1:1XCVEdxrvL6c0TGOhecLuB7U9z
 inet.af/netaddr v0.0.0-20230525184311-b8eac61e914a/go.mod h1:e83i32mAQOW1LAqEIweALsuK2Uw4mhQadA5r7b0Wobo=
 pkg.world.dev/world-engine/assert v1.0.0 h1:vD6+QLT1pvQa86FPFi+wGcVA7PEwTGndXr+PkTY/Fpw=
 pkg.world.dev/world-engine/assert v1.0.0/go.mod h1:bwA9YZ40+Tte6GUKibfqByxBLLt+54zjjFako8cpSuU=
-pkg.world.dev/world-engine/cardinal v1.2.6-beta h1:nbgfqpvq0hcni5dzpCTDwCEH3sO6p/J+yqfxhfKwtzU=
-pkg.world.dev/world-engine/cardinal v1.2.6-beta/go.mod h1:G5XveSFC1FNzybm+P6ONqhAHJLwQxLbp5vRcMGWuER4=
-pkg.world.dev/world-engine/cardinal v1.3.2 h1:pzS33m8NwxMblyDoXnE6ChFkh02w0sof2NRzoX/dHsc=
-pkg.world.dev/world-engine/cardinal v1.3.2/go.mod h1:G5XveSFC1FNzybm+P6ONqhAHJLwQxLbp5vRcMGWuER4=
+pkg.world.dev/world-engine/cardinal v1.3.3 h1:7Zt9sjPFzXKxr4RaxZx1mHcBwz/5wwjabmVChnv+N78=
+pkg.world.dev/world-engine/cardinal v1.3.3/go.mod h1:GpwPokVb1fqz5HOoJ2SIJq5xi9kql8kjBJHykQARn5g=
 pkg.world.dev/world-engine/rift v1.1.0-beta.0.20240402214846-de1fc179818a h1:P9pf6itjPBlooxj8p0jTkIY7ozcjSgCYsuh/BkbL56o=
 pkg.world.dev/world-engine/rift v1.1.0-beta.0.20240402214846-de1fc179818a/go.mod h1:XAD40g4r3qOp3CTa66JBY+ACEUtjr01loyHiUZIheN8=
 pkg.world.dev/world-engine/sign v1.0.1-beta h1:ZwVeJYdf88t6qIHPurbdKJKVxUN0dfp0gSF7OCA9xt8=
