@@ -21,7 +21,7 @@ services:
       - REDIS_MODE=normal
       - ROUTER_KEY=${ROUTER_KEY}
     restart: unless-stopped
-
+  
   cardinal-debug:
     container_name: cardinal-debug
     build:
@@ -85,10 +85,8 @@ services:
     image: ghcr.io/argus-labs/world-engine-nakama:1.2.5
     container_name: nakama
     depends_on:
-      nakama-db:
-        condition: service_healthy
-      cardinal:
-        condition: service_started
+      - "nakama-db"
+      - "${CARDINAL_CONTAINER:-cardinal}"
     environment:
       - CARDINAL_ADDR=${CARDINAL_ADDR:-cardinal:4040}
       - CARDINAL_NAMESPACE=${CARDINAL_NAMESPACE}
