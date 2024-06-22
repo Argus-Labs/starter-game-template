@@ -6,7 +6,6 @@ import (
 
 	"pkg.world.dev/world-engine/cardinal"
 	"pkg.world.dev/world-engine/cardinal/search/filter"
-	"pkg.world.dev/world-engine/cardinal/testutils"
 	"pkg.world.dev/world-engine/cardinal/types"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
@@ -15,7 +14,7 @@ import (
 // TestInitSystem_SpawnDefaultPlayersSystem_DefaultPlayersAreSpawned ensures a set of default players are created in the
 // SpawnDefaultPlayersSystem. These players should only be created on tick 0.
 func TestInitSystem_SpawnDefaultPlayersSystem_DefaultPlayersAreSpawned(t *testing.T) {
-	tf := testutils.NewTestFixture(t, nil)
+	tf := cardinal.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
 
 	tf.DoTick()

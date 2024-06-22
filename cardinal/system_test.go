@@ -8,7 +8,6 @@ import (
 	"pkg.world.dev/world-engine/cardinal"
 	"pkg.world.dev/world-engine/cardinal/receipt"
 	"pkg.world.dev/world-engine/cardinal/search/filter"
-	"pkg.world.dev/world-engine/cardinal/testutils"
 	"pkg.world.dev/world-engine/cardinal/types"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
@@ -23,7 +22,7 @@ const (
 // TestSystem_AttackSystem_ErrorWhenTargetDoesNotExist ensures the attack message results in an error when the given
 // target does not exist. Note, message errors are stored in receipts; they are NOT returned from the relevant system.
 func TestSystem_AttackSystem_ErrorWhenTargetDoesNotExist(t *testing.T) {
-	tf := testutils.NewTestFixture(t, nil)
+	tf := cardinal.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
 
 	txHash := tf.AddTransaction(getAttackMsgID(t, tf.World), msg.AttackPlayerMsg{
@@ -41,7 +40,7 @@ func TestSystem_AttackSystem_ErrorWhenTargetDoesNotExist(t *testing.T) {
 // TestSystem_PlayerSpawnerSystem_CanCreatePlayer ensures the CreatePlayer message can be used to create a new player
 // with the default amount of health. cardinal.NewSearch is used to find the newly created player.
 func TestSystem_PlayerSpawnerSystem_CanCreatePlayer(t *testing.T) {
-	tf := testutils.NewTestFixture(t, nil)
+	tf := cardinal.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
 
 	const nickname = "jeff"
@@ -88,7 +87,7 @@ func TestSystem_PlayerSpawnerSystem_CanCreatePlayer(t *testing.T) {
 // TestSystem_AttackSystem_AttackingTargetReducesTheirHealth ensures an attack message can find an existing target the
 // reduce the target's health.
 func TestSystem_AttackSystem_AttackingTargetReducesTheirHealth(t *testing.T) {
-	tf := testutils.NewTestFixture(t, nil)
+	tf := cardinal.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
 
 	const target = "jeff"

@@ -1,32 +1,27 @@
-# By default, the root project directory is the location of this config file. 
-# The root directory can be changed by uncommenting the following line.
-# root_dir="/path/to/cardinal/"
-
 [cardinal]
-CARDINAL_NAMESPACE="my-world-1" # required to be set in production
-REDIS_ADDRESS=""  # required to be set in production
-REDIS_PASSWORD="" # required to be set in production
-CARDINAL_MODE="development"     # can be either "development" or "production". leaving blank will default to "development"
-CARDINAL_LOG_LEVEL="info"      # must be one of (debug, info, warn, error, fatal, panic, disabled, trace)
-BASE_SHARD_SEQUENCER_ADDRESS="" # required to be set in production
-
-# Uncomment this line to specify a custom redis address
-# REDIS_ADDRESS="localhost:6379"
-# Uncomment this line to specify a redis password; this must be non-empty when CARDINAL_MODE="production"
-# REDIS_PASSWORD=""
+CARDINAL_NAMESPACE = "defaultnamespace"     # A namespace must be a unique alphanumeric string
+CARDINAL_ROLLUP_ENABLED = "false"           # Enables rollup mode
+CARDINAL_LOG_LEVEL = "info"                 # Must be one of (debug, info, warn, error, fatal, panic, disabled, trace)
+CARDINAL_LOG_PRETTY= "true"
+REDIS_ADDRESS = "localhost:6379"                 # UNIX Domain Socket or TCP Address
+REDIS_PASSWORD = ""                               # If TCP address is used, setting a password is encouraged in production
+TELEMETRY_TRACE_ENABLED = false                   # Enables OpenTelemetry tracing
+TELEMETRY_PROFILER_ENABLED = false                # Enables Datadog profiler
+BASE_SHARD_SEQUENCER_ADDRESS = "localhost:9601"   # Required if rollup mode is enabled
+BASE_SHARD_ROUTER_KEY = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ01" # Secure auth token for game shard
 
 [evm]
 # DA_AUTH_TOKEN is obtained from celestia client and passed in from world.toml. 
 # See https://docs.celestia.org/developers/node-tutorial#auth-token
+DA_BASE_URL="http://celestia-devnet"
 DA_AUTH_TOKEN=""
-DA_BASE_URL="http://celestia-devnet:26658"
 DA_NAMESPACE_ID="67480c4a88c4d12935d4"
-CHAIN_ID="world-engine"
-# KEY_MNEMONIC is a test mnemonic and should not be used in production. 
-# This mnemonic can be overwritten by setting the KEY_MNEMONIC environment variable.
-KEY_MNEMONIC="enact adjust liberty squirrel bulk ticket invest tissue antique window thank slam unknown fury script among bread social switch glide wool clog flag enroll"
-FAUCET_ADDR="world142fg37yzx04cslgeflezzh83wa4xlmjpms0sg5"
-BLOCK_TIME="1s"
+CHAIN_ID="world-420"
+# CHAIN_KEY_MNEMONIC is a test mnemonic and should not be used in production. 
+CHAIN_KEY_MNEMONIC="enact adjust liberty squirrel bulk ticket invest tissue antique window thank slam unknown fury script among bread social switch glide wool clog flag enroll"
+FAUCET_ENABLED = false
+FAUCET_ADDRESS = "aa9288F88233Eb887d194fF2215Cf1776a6FEE41" # ETH address without leading 0x (Default: account 0 of CHAIN_KEY_MNEMONIC)
+FAUCET_AMOUNT = "0x56BC75E2D6310000" # ETH in wei unit, encoded as hexadecimal (Default: 100 ETH)
 
 [nakama]
 ENABLE_ALLOWLIST="false" # enable nakama's beta key feature. you can generate and claim beta keys by setting this to true
