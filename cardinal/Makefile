@@ -16,14 +16,14 @@ lint-install:
 lint:
 	@$(MAKE) lint-install
 	@echo "--> Running golangci-lint"
-	@golangci-lint run  --timeout=10m --concurrency 8 -v
+	@golangci-lint run  --timeout=10m
 
 
 # Run golangci-lint on the project and fix any issues
 lint-fix:
 	@$(MAKE) lint-install
 	@echo "--> Running golangci-lint"
-	@golangci-lint run  --timeout=10m --fix --concurrency 8 -v
+	@golangci-lint run  --timeout=10m --fix
 
 test:
 	@go test ./...
