@@ -5,7 +5,7 @@ go 1.22.1
 require (
 	github.com/rs/zerolog v1.32.0
 	gotest.tools/v3 v3.5.1
-	pkg.world.dev/world-engine/cardinal v1.4.1
+	pkg.world.dev/world-engine/cardinal v1.5.1
 )
 
 require (
