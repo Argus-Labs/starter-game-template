@@ -86,8 +86,6 @@ services:
       - "/bin/sh"
       - "-ec"
       - >
-        echo "Waiting for nakama-db to be ready..." && curl -s --fail --retry 10 --retry-connrefused 10 http://nakama-db:8080/health?ready=1 >> /dev/null &&
-        echo "Waiting for cardinal to be ready..." && curl -s --fail --retry 10 --retry-connrefused 10 http://${CARDINAL_CONTAINER:-cardinal}:4040/health  >> /dev/null &&
         /nakama/nakama migrate up --database.address root:${DB_PASSWORD:-very_unsafe_password_replace_me}@nakama-db:26257/nakama &&
         /nakama/nakama --config /nakama/data/local.yml
         --database.address root:${DB_PASSWORD:-very_unsafe_password_replace_me}@nakama-db:26257/nakama
