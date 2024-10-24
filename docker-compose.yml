@@ -3,6 +3,7 @@ services:
     container_name: cardinal
     environment:
       - REDIS_ADDRESS=redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-very_unsafe_password_replace_me}
       - BASE_SHARD_SEQUENCER_ADDRESS=evm:9601
     build:
       target: runtime
@@ -20,6 +21,7 @@ services:
     container_name: cardinal-debug
     environment:
       - REDIS_ADDRESS=redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-very_unsafe_password_replace_me}
       - BASE_SHARD_SEQUENCER_ADDRESS=evm:9601
     build:
       target: runtime-debug
@@ -31,7 +33,6 @@ services:
       - redis
     expose:
       - "4040"
-      - "40000"
     ports:
       - "4040:4040"
       - "40000:40000"
@@ -120,11 +121,7 @@ services:
     volumes:
       - data:/var/lib/cockroach
     expose:
-      - "8080"
       - "26257"
-    ports:
-      - "26257:26257"
-      - "8080:8080"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health?ready=1" ]
       interval: 3s
@@ -137,12 +134,9 @@ services:
   redis:
     container_name: redis
     image: redis:latest
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-very_unsafe_password_replace_me}"]
     expose:
       - "6379"
-    ports:
-      - "6379:6379"
     attach: false
     restart: unless-stopped
     volumes:
@@ -163,8 +157,8 @@ services:
       retries: 20
     ports:
       - "26657"
-      - "26658:26658"
-      - "26659:26659"
+      - "26658"
+      - "26659"
       - "9090"
 
 volumes:
