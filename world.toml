@@ -3,11 +3,11 @@ CARDINAL_NAMESPACE = "defaultnamespace"     # A namespace must be a unique alpha
 CARDINAL_ROLLUP_ENABLED = "false"           # Enables rollup mode
 CARDINAL_LOG_LEVEL = "info"                 # Must be one of (debug, info, warn, error, fatal, panic, disabled, trace)
 CARDINAL_LOG_PRETTY= "true"
-REDIS_ADDRESS = "localhost:6379"                 # UNIX Domain Socket or TCP Address
-REDIS_PASSWORD = ""                               # If TCP address is used, setting a password is encouraged in production
-TELEMETRY_TRACE_ENABLED = false                   # Enables OpenTelemetry tracing
-TELEMETRY_PROFILER_ENABLED = false                # Enables Datadog profiler
-BASE_SHARD_SEQUENCER_ADDRESS = "localhost:9601"   # Required if rollup mode is enabled
+REDIS_ADDRESS = "localhost:6379"                   # UNIX Domain Socket or TCP Address
+REDIS_PASSWORD = "very_unsafe_password_replace_me" # If TCP address is used, setting a password is encouraged in production
+TELEMETRY_TRACE_ENABLED = false                    # Enables OpenTelemetry tracing
+TELEMETRY_PROFILER_ENABLED = false                 # Enables Datadog profiler
+BASE_SHARD_SEQUENCER_ADDRESS = "localhost:9601"    # Required if rollup mode is enabled
 BASE_SHARD_ROUTER_KEY = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ01" # Secure auth token for game shard
 
 [evm]
@@ -28,3 +28,15 @@ ENABLE_ALLOWLIST="false" # enable nakama's beta key feature. you can generate an
 # The number of undelivered notifications Nakama will allow before shutting down a connectino to a client.
 # See https://heroiclabs.com/docs/nakama/getting-started/configuration/#socket.outgoing_queue_size 
 OUTGOING_QUEUE_SIZE=64
+# Enables tracing within Nakama, which integrates with external tracing tools such as Jaeger for visualizing system performance.
+NAKAMA_TRACE_ENABLED = true   
+# Enables metrics collection within Nakama, integrating with Prometheus for system metrics tracking.
+NAKAMA_METRICS_ENABLED = true
+# Trace sample rate. valid values are between 0.0 to 1.0 inclusive. This is a float value.
+NAKAMA_TRACE_SAMPLE_RATE = 0.6
+# Prometheus scraping interval in seconds.
+NAKAMA_METRICS_INTERVAL = 30
+
+[common]
+# A key used by both Cardinal and EVM to coordinate activities
+ROUTER_KEY = "router_key"
