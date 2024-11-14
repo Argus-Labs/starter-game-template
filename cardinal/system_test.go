@@ -6,8 +6,8 @@ import (
 	"gotest.tools/v3/assert"
 
 	"pkg.world.dev/world-engine/cardinal"
+	"pkg.world.dev/world-engine/cardinal/filter"
 	"pkg.world.dev/world-engine/cardinal/receipt"
-	"pkg.world.dev/world-engine/cardinal/search/filter"
 	"pkg.world.dev/world-engine/cardinal/types"
 
 	"github.com/argus-labs/starter-game-template/cardinal/component"
