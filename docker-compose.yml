@@ -42,7 +42,7 @@ services:
 
   evm:
     container_name: evm
-    image: ghcr.io/argus-labs/world-engine-evm:1.4.1
+    image: ghcr.io/argus-labs/world-engine-evm:1.5.1
     environment:
       ## Env vars reference: https://github.com/Argus-Labs/world-engine/blob/main/evm/README.md
       ## Get AUTH_TOKEN from celestia_devnet container: `$(docker exec $(docker ps -q) celestia bridge auth admin --node.store /home/celestia/bridge`
@@ -71,8 +71,7 @@ services:
 
   nakama:
     container_name: nakama
-    platform: linux/amd64
-    image: ghcr.io/argus-labs/world-engine-nakama:1.2.7
+    image: ghcr.io/argus-labs/world-engine-nakama:1.4.0
     depends_on:
       - "nakama-db"
       - "${CARDINAL_CONTAINER:-cardinal}"
