@@ -25,7 +25,7 @@ FAUCET_AMOUNT = "0x56BC75E2D6310000" # ETH in wei unit, encoded as hexadecimal (
 
 [nakama]
 ENABLE_ALLOWLIST="false" # enable nakama's beta key feature. you can generate and claim beta keys by setting this to true
-# The number of undelivered notifications Nakama will allow before shutting down a connectino to a client.
+# The number of undelivered notifications Nakama will allow before shutting down a connection to a client.
 # See https://heroiclabs.com/docs/nakama/getting-started/configuration/#socket.outgoing_queue_size 
 OUTGOING_QUEUE_SIZE=64
 # Enables tracing within Nakama, which integrates with external tracing tools such as Jaeger for visualizing system performance.
