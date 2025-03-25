@@ -8,10 +8,10 @@ To begin your development journey with World Engine, you install
 [World CLI](https://github.com/Argus-Labs/world-cli) a tool for creating, managing, and deploying World
 Engine projects.
 
-Install the latest world-cli release by running:
+Install the latest world-cli release by running (requires a working GoLang installation):
 
 ```bash
-curl https://install.world.dev/cli! | bash
+go install pkg.world.dev/world-cli/cmd/world@latest
 ```
 
 ### Docker
